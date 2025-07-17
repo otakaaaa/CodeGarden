@@ -12,6 +12,7 @@ import ReactFlow, {
   addEdge,
   Connection,
   Panel,
+  NodeTypes,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useAuth } from "@/components/providers/AuthProvider";
@@ -20,6 +21,14 @@ import Button from "@/components/ui/Button";
 import ComponentPalette from "@/components/editor/ComponentPalette";
 import PropertyPanel from "@/components/editor/PropertyPanel";
 import PreviewPanel from "@/components/editor/PreviewPanel";
+import { ButtonNode, TextNode, InputNode } from "@/components/editor/nodes";
+
+// カスタムノードタイプの定義
+const nodeTypes: NodeTypes = {
+  buttonNode: ButtonNode,
+  textNode: TextNode,
+  inputNode: InputNode,
+};
 
 export default function ProjectEditorPage() {
   const { id } = useParams();
@@ -47,9 +56,15 @@ export default function ProjectEditorPage() {
   useEffect(() => {
     if (project?.data?.nodes) {
       // Convert schema nodes to ReactFlow format
+      const nodeTypeMap = {
+        button: "buttonNode",
+        text: "textNode",
+        input: "inputNode",
+      };
+
       const reactFlowNodes = project.data.nodes.map(node => ({
         id: node.id,
-        type: "default",
+        type: nodeTypeMap[node.type as keyof typeof nodeTypeMap] || "default",
         position: node.position,
         data: {
           ...node.data,
@@ -118,13 +133,25 @@ export default function ProjectEditorPage() {
   };
 
   const addComponent = (type: string) => {
+    const nodeTypeMap = {
+      button: "buttonNode",
+      text: "textNode", 
+      input: "inputNode",
+    };
+
+    const labelMap = {
+      button: "ボタン",
+      text: "テキスト",
+      input: "入力欄",
+    };
+
     const newNode: Node = {
       id: `${type}-${Date.now()}`,
-      type: "default", // ReactFlow node type
+      type: nodeTypeMap[type as keyof typeof nodeTypeMap] || "default",
       position: { x: Math.random() * 400, y: Math.random() * 300 },
       data: {
-        label: type === "button" ? "ボタン" : type === "text" ? "テキスト" : "入力欄",
-        componentType: type, // Our custom component type
+        label: labelMap[type as keyof typeof labelMap] || type,
+        componentType: type,
         props: {},
       },
     };
@@ -207,6 +234,7 @@ export default function ProjectEditorPage() {
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
+                nodeTypes={nodeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
