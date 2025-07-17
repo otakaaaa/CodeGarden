@@ -22,6 +22,7 @@ import ComponentPalette from "@/components/editor/ComponentPalette";
 import PropertyPanel from "@/components/editor/PropertyPanel";
 import PreviewPanel from "@/components/editor/PreviewPanel";
 import { ButtonNode, TextNode, InputNode } from "@/components/editor/nodes";
+import { initializeEventEngine, resetEventEngine } from "@/lib/eventEngine";
 
 // カスタムノードタイプの定義
 const nodeTypes: NodeTypes = {
@@ -39,6 +40,7 @@ export default function ProjectEditorPage() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [projectVariables, setProjectVariables] = useState<Record<string, unknown>>({});
 
   const { project, loading, error } = useAppSelector((state) => state.currentProject);
 
@@ -84,6 +86,46 @@ export default function ProjectEditorPage() {
       setEdges(reactFlowEdges);
     }
   }, [project, setNodes, setEdges]);
+
+  // イベントエンジンの初期化
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const nodeData: Record<string, unknown> = {};
+      nodes.forEach(node => {
+        nodeData[node.id] = {
+          ...node.data,
+          value: "", // 初期値
+        };
+      });
+
+      initializeEventEngine({
+        variables: projectVariables,
+        nodes: nodeData,
+        onVariableChange: (name, value) => {
+          setProjectVariables(prev => ({ ...prev, [name]: value }));
+        },
+        onNodeUpdate: (nodeId, updates) => {
+          setNodes((nds) =>
+            nds.map((node) =>
+              node.id === nodeId && updates && typeof updates === 'object' 
+                ? { ...node, data: { ...node.data, ...updates } } 
+                : node
+            )
+          );
+        },
+        onShowAlert: (message) => {
+          alert(message); // 後でより良いアラート実装に変更可能
+        },
+      });
+    }
+
+    // クリーンアップ
+    return () => {
+      if (nodes.length === 0) {
+        resetEventEngine();
+      }
+    };
+  }, [nodes, projectVariables, setNodes]);
 
   const onConnect = (connection: Connection) => {
     setEdges((eds) => addEdge(connection, eds));
@@ -260,6 +302,7 @@ export default function ProjectEditorPage() {
             {/* Property Panel */}
             <PropertyPanel
               selectedNode={selectedNode}
+              allNodes={nodes}
               onNodeUpdate={(nodeId, updates) => {
                 setNodes((nds) =>
                   nds.map((node) =>
