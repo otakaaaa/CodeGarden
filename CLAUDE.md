@@ -18,16 +18,24 @@
 1. **プロジェクト初期セットアップ** - Next.js + TypeScript + Tailwind CSS、必要パッケージインストール
 2. **Docker環境構築** - ローカル開発用（Node.js 22 LTS、ポート3300）
 3. **ディレクトリ構造修正** - 重複解消、ファイル配置最適化
+4. **Redux Toolkit の設定とslice作成** - projects, currentProject, uiState
+5. **Supabase の設定** - 認証、データベース、RLS
+6. **基本レイアウトとルーティング設定** - Header, Footer, MainLayout
+7. **トップページの実装** - キャッチコピー「組み立てながら学ぶ、ノーコードの新しいカタチ」
+8. **ReactFlow編集画面の実装** - /projects/[id]、ComponentPalette、PropertyPanel、PreviewPanel
+9. **UIパーツコンポーネントの作成** - Button、Text、Input + カスタムノード + ショーケースページ
 
 ## 進行中タスク 🔄
-- **Redux Toolkit の設定とslice作成** (projects, currentProject, uiState)
+なし
 
 ## 次のタスク 📋
-- Supabase の設定 (認証、データベース、RLS)
-- 基本レイアウトとルーティング設定
-- トップページ (/) の実装
-- react-flow を使った編集画面 (/projects/[id]) の実装
+- 料金プランページ (/pricing) の実装
+- 認証・アカウント管理ページ (/account) の実装  
+- プロジェクト一覧ページ (/projects) の実装
 - UIパーツコンポーネント (Button, Text, Input) の作成
+- イベントハンドリングシステムの実装
+- プレビュー機能の実装
+- Stripe決済APIの実装
 
 ## 重要な決定事項 📝
 - Vercelデプロイ用にDocker本番環境設定は削除
