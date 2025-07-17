@@ -21,7 +21,7 @@ const Text = forwardRef<HTMLElement, TextProps>(
     align = "left",
     children, 
     ...props 
-  }, ref) => {
+  }) => {
     const baseClasses = "transition-colors";
     
     const variants = {
@@ -70,7 +70,6 @@ const Text = forwardRef<HTMLElement, TextProps>(
 
     return (
       <Component
-        ref={ref as React.Ref<any>}
         className={cn(
           baseClasses,
           textSize,

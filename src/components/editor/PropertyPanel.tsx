@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import { Node } from "reactflow";
+import { NodeEvent } from "@/lib/schemas";
 import Button from "@/components/ui/Button";
+import EventConfigModal from "./EventConfigModal";
 
 interface PropertyPanelProps {
   selectedNode: Node | null;
   onNodeUpdate: (nodeId: string, updates: Record<string, unknown>) => void;
+  allNodes: Node[];
 }
 
-export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPanelProps) {
+export default function PropertyPanel({ selectedNode, onNodeUpdate, allNodes }: PropertyPanelProps) {
   const [label, setLabel] = useState(selectedNode?.data?.label || "");
   const [color, setColor] = useState(selectedNode?.data?.props?.color || "#3B82F6");
   const [size, setSize] = useState(selectedNode?.data?.props?.size || "medium");
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [, setEventType] = useState<"onClick" | "onChange" | "onSubmit">("onClick");
 
   const handleLabelChange = (newLabel: string) => {
     setLabel(newLabel);
@@ -37,6 +42,29 @@ export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPa
         props: { ...selectedNode.data.props, size: newSize }
       });
     }
+  };
+
+  const openEventModal = (type: "onClick" | "onChange" | "onSubmit") => {
+    setEventType(type);
+    setIsEventModalOpen(true);
+  };
+
+  const handleEventsSave = (events: NodeEvent[]) => {
+    if (selectedNode) {
+      onNodeUpdate(selectedNode.id, { events });
+    }
+  };
+
+  const getAvailableNodes = () => {
+    return allNodes.map(node => ({
+      id: node.id,
+      label: node.data?.label || node.id,
+      type: node.data?.componentType || "unknown",
+    }));
+  };
+
+  const getCurrentEvents = (): NodeEvent[] => {
+    return selectedNode?.data?.events || [];
   };
 
   if (!selectedNode) {
@@ -124,26 +152,15 @@ export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPa
               variant="outline"
               size="sm"
               className="w-full text-left justify-start"
-              onClick={() => {
-                // TODO: Open event configuration modal
-                console.log("Configure click event");
-              }}
+              onClick={() => openEventModal("onClick")}
             >
-              📱 クリック時の動作
+              📱 イベントを設定
             </Button>
             
-            {selectedNode.data.componentType === "input" && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-left justify-start"
-                onClick={() => {
-                  // TODO: Open event configuration modal
-                  console.log("Configure input event");
-                }}
-              >
-                ⌨️ 入力時の動作
-              </Button>
+            {getCurrentEvents().length > 0 && (
+              <div className="mt-2 text-xs text-gray-600">
+                {getCurrentEvents().length}個のイベントが設定済み
+              </div>
             )}
           </div>
         </div>
@@ -157,6 +174,19 @@ export default function PropertyPanel({ selectedNode, onNodeUpdate }: PropertyPa
           </div>
         </div>
       </div>
+
+      {/* Event Configuration Modal */}
+      {selectedNode && (
+        <EventConfigModal
+          isOpen={isEventModalOpen}
+          onClose={() => setIsEventModalOpen(false)}
+          onSave={handleEventsSave}
+          nodeId={selectedNode.id}
+          nodeType={selectedNode.data?.componentType || "unknown"}
+          initialEvents={getCurrentEvents()}
+          availableNodes={getAvailableNodes()}
+        />
+      )}
     </div>
   );
 }

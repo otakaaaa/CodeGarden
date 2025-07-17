@@ -24,17 +24,16 @@
 7. **トップページの実装** - キャッチコピー「組み立てながら学ぶ、ノーコードの新しいカタチ」
 8. **ReactFlow編集画面の実装** - /projects/[id]、ComponentPalette、PropertyPanel、PreviewPanel
 9. **UIパーツコンポーネントの作成** - Button、Text、Input + カスタムノード + ショーケースページ
+10. **イベントハンドリングシステムの実装** - EventEngine、EventConfigModal、ノード統合
 
 ## 進行中タスク 🔄
 なし
 
 ## 次のタスク 📋
+- プレビュー機能の実装
 - 料金プランページ (/pricing) の実装
 - 認証・アカウント管理ページ (/account) の実装  
 - プロジェクト一覧ページ (/projects) の実装
-- UIパーツコンポーネント (Button, Text, Input) の作成
-- イベントハンドリングシステムの実装
-- プレビュー機能の実装
 - Stripe決済APIの実装
 
 ## 重要な決定事項 📝
