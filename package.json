@@ -17,7 +17,8 @@
     "react-dom": "19.1.0",
     "react-redux": "^9.2.0",
     "reactflow": "^11.11.4",
-    "stripe": "^18.3.0"
+    "stripe": "^18.3.0",
+    "zod": "^4.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
