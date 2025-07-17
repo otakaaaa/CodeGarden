@@ -8,13 +8,52 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { fetchProjects, createProject } from "@/lib/slices/projectsSlice";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
+import { Text, Input } from "@/components/ui";
 
 export default function ProjectsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const dispatch = useAppDispatch();
   const { projects, loading, error } = useAppSelector((state) => state.projects);
+  
+  // UI states
   const [createLoading, setCreateLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"name" | "updated" | "created">("updated");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+
+  // Templates
+  const templates = [
+    {
+      id: "blank",
+      name: "空のプロジェクト",
+      description: "何もない状態から始める",
+      icon: "📄",
+      components: 0,
+    },
+    {
+      id: "hello-world",
+      name: "Hello World",
+      description: "最初のボタンとテキスト",
+      icon: "👋",
+      components: 2,
+    },
+    {
+      id: "form-example",
+      name: "フォーム例",
+      description: "入力フォームのサンプル",
+      icon: "📝",
+      components: 4,
+    },
+    {
+      id: "interactive-demo",
+      name: "インタラクティブデモ",
+      description: "イベント機能のデモ",
+      icon: "✨",
+      components: 6,
+    },
+  ];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -27,11 +66,19 @@ export default function ProjectsPage() {
     }
   }, [user, authLoading, dispatch, router]);
 
-  const handleCreateProject = async () => {
+  const handleCreateProject = async (templateId?: string) => {
     setCreateLoading(true);
     try {
-      const result = await dispatch(createProject({ name: "新しいプロジェクト" }));
+      const projectName = templateId === "blank" ? "新しいプロジェクト" : 
+                         templates.find(t => t.id === templateId)?.name || "新しいプロジェクト";
+      
+      const result = await dispatch(createProject({ 
+        name: projectName,
+        template: templateId 
+      }));
+      
       if (createProject.fulfilled.match(result)) {
+        setShowTemplateModal(false);
         router.push(`/projects/${result.payload.id}`);
       }
     } catch (err) {
@@ -40,6 +87,59 @@ export default function ProjectsPage() {
       setCreateLoading(false);
     }
   };
+
+  const handleDuplicateProject = async (projectId: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    setCreateLoading(true);
+    try {
+      const result = await dispatch(createProject({ 
+        name: `${project.name} のコピー`,
+        data: project.data 
+      }));
+      
+      if (createProject.fulfilled.match(result)) {
+        router.push(`/projects/${result.payload.id}`);
+      }
+    } catch (err) {
+      console.error("プロジェクト複製エラー:", err);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!window.confirm("プロジェクトを削除しますか？この操作は取り消せません。")) {
+      return;
+    }
+
+    try {
+      // TODO: Implement delete project in slice
+      // await dispatch(deleteProject(projectId));
+      console.log("削除予定のプロジェクトID:", projectId);
+      alert("プロジェクト削除機能は近日実装予定です");
+    } catch (err) {
+      console.error("プロジェクト削除エラー:", err);
+    }
+  };
+
+  // Filter and sort projects
+  const filteredProjects = projects
+    .filter(project => 
+      project.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "created":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "updated":
+        default:
+          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      }
+    });
 
   if (authLoading || loading) {
     return (
@@ -59,17 +159,66 @@ export default function ProjectsPage() {
     <MainLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">プロジェクト</h1>
-            <p className="mt-2 text-gray-600">
-              あなたのプロジェクト一覧です
-            </p>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+          <div className="mb-4 lg:mb-0">
+            <Text variant="heading" className="mb-2">プロジェクト</Text>
+            <Text variant="body" color="muted">
+              あなたのプロジェクト一覧です ({projects.length}個)
+            </Text>
           </div>
-          <Button onClick={handleCreateProject} loading={createLoading}>
+          <Button onClick={() => setShowTemplateModal(true)} loading={createLoading}>
             新しいプロジェクト
           </Button>
         </div>
+
+        {/* Search and Filters */}
+        {projects.length > 0 && (
+          <div className="mb-8 flex flex-col lg:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                placeholder="プロジェクトを検索..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                leftIcon={
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                }
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="updated">最新更新順</option>
+                <option value="created">作成日順</option>
+                <option value="name">名前順</option>
+              </select>
+              
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`px-3 py-2 ${viewMode === "grid" ? "bg-green-50 text-green-600" : "text-gray-600 hover:bg-gray-50"}`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`px-3 py-2 ${viewMode === "list" ? "bg-green-50 text-green-600" : "text-gray-600 hover:bg-gray-50"}`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Error */}
         {error && (
@@ -78,53 +227,160 @@ export default function ProjectsPage() {
           </div>
         )}
 
-        {/* Projects Grid */}
-        {projects.length === 0 ? (
+        {/* Projects Display */}
+        {filteredProjects.length === 0 && projects.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              プロジェクトがありません
-            </h3>
-            <p className="text-gray-600 mb-6">
+            <Text variant="title" className="mb-2">プロジェクトがありません</Text>
+            <Text variant="body" color="muted" className="mb-6">
               最初のプロジェクトを作成して、プログラミング学習を始めましょう
-            </p>
-            <Button onClick={handleCreateProject} loading={createLoading}>
+            </Text>
+            <Button onClick={() => setShowTemplateModal(true)} loading={createLoading}>
               プロジェクトを作成
             </Button>
           </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="text-center py-12">
+            <Text variant="title" className="mb-2">検索結果が見つかりません</Text>
+            <Text variant="body" color="muted">
+              検索条件を変更してお試しください
+            </Text>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-              <Link
-                key={project.id}
-                href={`/projects/${project.id}`}
-                className="group block bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
-                    {project.name}
-                  </h3>
-                  <div className="text-sm text-gray-500">
-                    {project.data.nodes.length} パーツ
+          <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
+            {filteredProjects.map((project) => (
+              <div key={project.id} className={`group relative bg-white border border-gray-200 rounded-lg ${viewMode === "grid" ? "p-6" : "p-4"} hover:shadow-lg transition-all`}>
+                {/* Project Link */}
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="block"
+                >
+                  <div className={`flex ${viewMode === "list" ? "items-center justify-between" : "flex-col"}`}>
+                    <div className={`${viewMode === "list" ? "flex-1" : ""}`}>
+                      <div className={`flex items-center ${viewMode === "list" ? "justify-between" : "justify-start mb-4"}`}>
+                        <Text variant="subtitle" className="group-hover:text-green-600 transition-colors">
+                          {project.name}
+                        </Text>
+                        {viewMode === "grid" && (
+                          <Text variant="caption" color="muted">
+                            {project.data.nodes.length} パーツ
+                          </Text>
+                        )}
+                      </div>
+                      
+                      <div className={`${viewMode === "list" ? "flex items-center space-x-4" : "space-y-2"}`}>
+                        <Text variant="caption" color="muted">
+                          最終更新: {new Date(project.updated_at).toLocaleDateString("ja-JP")}
+                        </Text>
+                        {viewMode === "list" && (
+                          <Text variant="caption" color="muted">
+                            {project.data.nodes.length} パーツ
+                          </Text>
+                        )}
+                      </div>
+                      
+                      {viewMode === "grid" && (
+                        <div className="flex items-center text-sm text-gray-500 mt-4">
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 6l-4-2v4l4-2z" clipRule="evenodd" />
+                          </svg>
+                          プレビュー
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+
+                {/* Action Menu */}
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDuplicateProject(project.id);
+                      }}
+                      title="複製"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteProject(project.id);
+                      }}
+                      title="削除"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="text-sm text-gray-600 mb-4">
-                  最終更新: {new Date(project.updated_at).toLocaleDateString("ja-JP")}
-                </div>
-
-                <div className="flex items-center text-sm text-gray-500">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 6l-4-2v4l4-2z" clipRule="evenodd" />
-                  </svg>
-                  プレビュー
-                </div>
-              </Link>
+              </div>
             ))}
+          </div>
+        )}
+
+        {/* Template Modal */}
+        {showTemplateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <Text variant="title">新しいプロジェクトを作成</Text>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowTemplateModal(false)}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </Button>
+                </div>
+                <Text variant="body" color="muted" className="mt-2">
+                  テンプレートを選択してプロジェクトを始めましょう
+                </Text>
+              </div>
+
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {templates.map((template) => (
+                    <button
+                      key={template.id}
+                      onClick={() => handleCreateProject(template.id)}
+                      disabled={createLoading}
+                      className="text-left p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors disabled:opacity-50"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <span className="text-2xl">{template.icon}</span>
+                        <div className="flex-1">
+                          <Text variant="body" weight="medium" className="mb-1">
+                            {template.name}
+                          </Text>
+                          <Text variant="caption" color="muted" className="mb-2">
+                            {template.description}
+                          </Text>
+                          <Text variant="caption" color="muted">
+                            {template.components}個のコンポーネント
+                          </Text>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
