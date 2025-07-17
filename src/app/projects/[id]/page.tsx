@@ -40,6 +40,7 @@ export default function ProjectEditorPage() {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [isFullscreenPreview, setIsFullscreenPreview] = useState(false);
   const [projectVariables, setProjectVariables] = useState<Record<string, unknown>>({});
 
   const { project, loading, error } = useAppSelector((state) => state.currentProject);
@@ -251,21 +252,63 @@ export default function ProjectEditorPage() {
         </div>
         
         <div className="flex items-center space-x-4">
+          {showPreview && (
+            <Button
+              variant="outline"
+              onClick={() => setIsFullscreenPreview(!isFullscreenPreview)}
+            >
+              {isFullscreenPreview ? "縮小表示" : "フルスクリーン"}
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={() => setShowPreview(!showPreview)}
           >
-            {showPreview ? "編集" : "プレビュー"}
+            {showPreview ? "編集モード" : "プレビュー"}
           </Button>
-          <Button onClick={handleSave}>
-            保存
-          </Button>
+          {!showPreview && (
+            <Button onClick={handleSave}>
+              保存
+            </Button>
+          )}
         </div>
       </header>
 
       <div className="flex-1 flex">
         {showPreview ? (
-          <PreviewPanel nodes={nodes} edges={edges} />
+          isFullscreenPreview ? (
+            <div className="fixed inset-0 bg-white z-50 flex flex-col">
+              {/* Fullscreen Preview Header */}
+              <div className="bg-gray-900 text-white px-4 py-2 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="font-medium">{project.name} - プレビュー</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setIsFullscreenPreview(false)}
+                  >
+                    フルスクリーン終了
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowPreview(false)}
+                    className="border-gray-600 text-white hover:bg-gray-800"
+                  >
+                    編集に戻る
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1">
+                <PreviewPanel nodes={nodes} edges={edges} />
+              </div>
+            </div>
+          ) : (
+            <PreviewPanel nodes={nodes} edges={edges} />
+          )
         ) : (
           <>
             {/* Component Palette */}
