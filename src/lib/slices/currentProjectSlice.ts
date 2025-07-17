@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Project, FlowNode, FlowEdge, ProjectSettings } from "../schemas";
+import { Project, FlowNode, FlowEdge, ProjectSettings, UpdateProject } from "../schemas";
+import * as projectsApi from "../supabase/projects";
 
 interface CurrentProjectState {
   project: Project | null;
@@ -19,16 +20,14 @@ const initialState: CurrentProjectState = {
 export const fetchProject = createAsyncThunk(
   "currentProject/fetchProject",
   async (projectId: string) => {
-    // TODO: Supabase実装時に追加
-    return null as Project | null;
+    return await projectsApi.fetchProject(projectId);
   }
 );
 
 export const saveProject = createAsyncThunk(
   "currentProject/saveProject",
-  async (project: Project) => {
-    // TODO: Supabase実装時に追加
-    return project;
+  async ({ projectId, projectData }: { projectId: string; projectData: UpdateProject }) => {
+    return await projectsApi.updateProject(projectId, projectData);
   }
 );
 

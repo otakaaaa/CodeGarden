@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeGarden
 
-## Getting Started
+> 組み立てながら学ぶ、ノーコードの新しいカタチ
 
-First, run the development server:
+プログラミング学習用ノーコードアプリケーション
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 15 (App Router) + TypeScript
+- **状態管理**: Redux Toolkit
+- **UI**: Tailwind CSS
+- **ビジュアル編集**: ReactFlow
+- **認証・DB**: Supabase
+- **決済**: Stripe
+- **デプロイ**: Vercel
+
+## 開発環境セットアップ
+
+### 1. 依存関係インストール
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 環境変数設定
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`.env.local`ファイルを作成：
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-## Learn More
+# Stripe
+STRIPE_SECRET_KEY=your_stripe_secret_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 
-To learn more about Next.js, take a look at the following resources:
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Supabaseセットアップ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. [Supabase](https://supabase.com)でプロジェクト作成
+2. `supabase/migrations/001_create_projects_table.sql`を実行
+3. 環境変数に接続情報を設定
 
-## Deploy on Vercel
+### 4. 開発サーバー起動
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### ローカル（npm）
+```bash
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### Docker
+```bash
+make up    # バックグラウンド起動
+make dev   # フォアグラウンド起動（ログ表示）
+```
+
+アプリケーションは http://localhost:3300 でアクセス可能
+
+## プロジェクト構造
+
+```
+src/
+├── app/                 # Next.js App Router
+├── components/          # React コンポーネント
+│   └── providers/       # Context Providers
+├── lib/
+│   ├── schemas.ts       # Zod スキーマ & 型定義
+│   ├── store.ts         # Redux store
+│   ├── hooks.ts         # Redux hooks
+│   ├── supabase.ts      # Supabase client
+│   ├── slices/          # Redux slices
+│   └── supabase/        # Supabase API functions
+└── ...
+```
+
+## 主な機能
+
+### MVP機能
+- UIパーツ（Button, Text, Input）のドラッグ&ドロップ配置
+- ノードにイベント（onClick等）を設定
+- プレビューモードでの動作確認
+- プロジェクトの保存・読み込み
+
+### 課金機能
+- **Free**: 1プロジェクト、ローカル保存のみ
+- **Pro** (¥980/月): 複数プロジェクト、クラウド保存、高度ロジック
+- **Team** (¥3,800/月): 共同編集、メンバー管理
+
+## 開発コマンド
+
+```bash
+# 開発サーバー起動
+npm run dev
+
+# ビルド
+npm run build
+
+# 型チェック
+npm run type-check
+
+# Lint
+npm run lint
+
+# Docker関連
+make up      # 開発環境起動（バックグラウンド）
+make dev     # 開発環境起動（ログ表示）
+make down    # 停止
+make logs    # ログ確認
+make shell   # コンテナにアクセス
+make clean   # クリーンアップ
+```
+
+## データベーススキーマ
+
+### projects テーブル
+```sql
+- id: uuid (PK)
+- user_id: uuid (FK: auth.users.id)
+- name: text
+- data: jsonb (nodes, edges, settings)
+- created_at: timestamp
+- updated_at: timestamp
+- is_deleted: boolean
+```
+
+## ライセンス
+
+MIT

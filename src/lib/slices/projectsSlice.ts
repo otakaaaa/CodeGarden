@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { Project } from "../schemas";
+import { Project, CreateProject } from "../schemas";
+import * as projectsApi from "../supabase/projects";
 
 interface ProjectsState {
   projects: Project[];
@@ -13,44 +14,25 @@ const initialState: ProjectsState = {
   error: null,
 };
 
-// 非同期アクション（後でSupabase連携時に実装）
+// 非同期アクション
 export const fetchProjects = createAsyncThunk(
   "projects/fetchProjects",
   async () => {
-    // TODO: Supabase実装時に追加
-    return [] as Project[];
+    return await projectsApi.fetchProjects();
   }
 );
 
 export const createProject = createAsyncThunk(
   "projects/createProject",
-  async (projectData: { name: string }) => {
-    // TODO: Supabase実装時に追加
-    const newProject: Project = {
-      id: crypto.randomUUID(),
-      user_id: "temp-user-id",
-      name: projectData.name,
-      data: {
-        nodes: [],
-        edges: [],
-        settings: {
-          theme: "light",
-          previewMode: false,
-          variables: {},
-        },
-      },
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      is_deleted: false,
-    };
-    return newProject;
+  async (projectData: CreateProject) => {
+    return await projectsApi.createProject(projectData);
   }
 );
 
 export const deleteProject = createAsyncThunk(
   "projects/deleteProject",
   async (projectId: string) => {
-    // TODO: Supabase実装時に追加
+    await projectsApi.deleteProject(projectId);
     return projectId;
   }
 );
