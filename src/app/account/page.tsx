@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { updatePassword, signOut } from "@/lib/supabase/auth";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
 import { Text, Input } from "@/components/ui";
+import { 
+  createCustomer, 
+  getCustomerSubscriptions, 
+  cancelSubscription, 
+  reactivateSubscription,
+  createCustomerPortalSession 
+} from "@/lib/stripe/client";
+import { getPlanByPriceId } from "@/lib/stripe/config";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -30,6 +38,47 @@ export default function AccountPage() {
   // Account deletion
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  
+  // Subscription management
+  const [customerId, setCustomerId] = useState<string | null>(null);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+
+interface Subscription {
+  id: string;
+  status: string;
+  current_period_end: number;
+  cancel_at_period_end: boolean;
+  items: {
+    data: Array<{
+      price: {
+        id: string;
+      };
+    }>;
+  };
+  created: number;
+}
+
+  const initializeStripeData = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      // Create or get customer
+      const customerResponse = await createCustomer(
+        user.email!,
+        user.user_metadata?.display_name || user.email!,
+        user.id
+      );
+      setCustomerId(customerResponse.customerId);
+      
+      // Get subscriptions
+      const subscriptionsResponse = await getCustomerSubscriptions(customerResponse.customerId);
+      setSubscriptions(subscriptionsResponse.subscriptions || []);
+    } catch (error) {
+      console.error("Failed to initialize Stripe data:", error);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -39,8 +88,11 @@ export default function AccountPage() {
       // Initialize profile data
       setDisplayName(user.user_metadata?.display_name || "");
       setBio(user.user_metadata?.bio || "");
+      
+      // Initialize Stripe customer and subscriptions
+      initializeStripeData();
     }
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router, initializeStripeData]);
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +169,54 @@ export default function AccountPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCancelSubscription = async (subscriptionId: string) => {
+    if (!window.confirm("サブスクリプションをキャンセルしますか？現在の期間終了時に終了されます。")) {
+      return;
+    }
+
+    setSubscriptionLoading(true);
+    try {
+      await cancelSubscription(subscriptionId);
+      setSuccess("サブスクリプションがキャンセルされました。現在の期間終了時に終了されます。");
+      await initializeStripeData(); // Refresh subscription data
+    } catch {
+      setError("サブスクリプションのキャンセルに失敗しました。");
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
+  const handleReactivateSubscription = async (subscriptionId: string) => {
+    setSubscriptionLoading(true);
+    try {
+      await reactivateSubscription(subscriptionId);
+      setSuccess("サブスクリプションが再開されました。");
+      await initializeStripeData(); // Refresh subscription data
+    } catch {
+      setError("サブスクリプションの再開に失敗しました。");
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
+  const handleCustomerPortal = async () => {
+    if (!customerId) return;
+
+    setSubscriptionLoading(true);
+    try {
+      const { url } = await createCustomerPortalSession(customerId);
+      window.location.href = url;
+    } catch {
+      setError("カスタマーポータルの起動に失敗しました。");
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
+  const getCurrentSubscription = () => {
+    return subscriptions.find(sub => sub.status === "active" || sub.status === "trialing");
   };
 
   const tabs = [
@@ -277,39 +377,121 @@ export default function AccountPage() {
         );
 
       case "subscription":
+        const currentSubscription = getCurrentSubscription();
+        const plan = currentSubscription ? getPlanByPriceId(currentSubscription.items.data[0]?.price.id) : null;
+
         return (
           <div className="space-y-6">
+            {/* Current Plan */}
             <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-              <Text variant="subtitle" className="mb-4">現在のプラン</Text>
+              <div className="flex items-center justify-between mb-4">
+                <Text variant="subtitle">現在のプラン</Text>
+                {customerId && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleCustomerPortal}
+                    loading={subscriptionLoading}
+                  >
+                    請求情報を管理
+                  </Button>
+                )}
+              </div>
               
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                <div>
-                  <Text variant="body" weight="semibold" color="success">Free プラン</Text>
-                  <Text variant="caption" color="muted">1プロジェクト、ローカル保存のみ</Text>
-                </div>
-                <Button variant="primary" onClick={() => router.push("/pricing")}>
-                  プランを変更
-                </Button>
-              </div>
+              {currentSubscription ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div>
+                      <Text variant="body" weight="semibold" color="primary">
+                        {plan?.name || "Pro"} プラン
+                      </Text>
+                      <Text variant="caption" color="muted">
+                        ステータス: {currentSubscription.status === "active" ? "有効" : 
+                                   currentSubscription.status === "trialing" ? "トライアル中" : 
+                                   currentSubscription.cancel_at_period_end ? "キャンセル済み" : "不明"}
+                      </Text>
+                      <Text variant="caption" color="muted">
+                        次回更新: {new Date(currentSubscription.current_period_end * 1000).toLocaleDateString("ja-JP")}
+                      </Text>
+                    </div>
+                    <div className="flex space-x-2">
+                      {currentSubscription.cancel_at_period_end ? (
+                        <Button 
+                          variant="primary" 
+                          size="sm"
+                          onClick={() => handleReactivateSubscription(currentSubscription.id)}
+                          loading={subscriptionLoading}
+                        >
+                          再開
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleCancelSubscription(currentSubscription.id)}
+                          loading={subscriptionLoading}
+                        >
+                          キャンセル
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => router.push("/pricing")}>
+                        プラン変更
+                      </Button>
+                    </div>
+                  </div>
 
-              <div className="mt-6">
-                <Text variant="body" weight="medium" className="mb-3">プランの特典</Text>
-                <ul className="space-y-2">
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <Text variant="caption">1プロジェクト作成</Text>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <Text variant="caption">基本UIパーツ</Text>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <Text variant="caption">チュートリアル機能</Text>
-                  </li>
-                </ul>
-              </div>
+                  {plan && (
+                    <div className="mt-6">
+                      <Text variant="body" weight="medium" className="mb-3">プランの特典</Text>
+                      <ul className="space-y-2">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-center">
+                            <span className="text-green-500 mr-2">✓</span>
+                            <Text variant="caption">{feature}</Text>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div>
+                    <Text variant="body" weight="semibold" color="success">Free プラン</Text>
+                    <Text variant="caption" color="muted">1プロジェクト、ローカル保存のみ</Text>
+                  </div>
+                  <Button variant="primary" onClick={() => router.push("/pricing")}>
+                    プランをアップグレード
+                  </Button>
+                </div>
+              )}
             </div>
+
+            {/* Subscription History */}
+            {subscriptions.length > 0 && (
+              <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+                <Text variant="subtitle" className="mb-4">サブスクリプション履歴</Text>
+                <div className="space-y-3">
+                  {subscriptions.map((subscription, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <Text variant="body" weight="medium">
+                          {getPlanByPriceId(subscription.items.data[0]?.price.id)?.name || "Unknown Plan"}
+                        </Text>
+                        <Text variant="caption" color="muted">
+                          {subscription.status === "active" ? "有効" : 
+                           subscription.status === "canceled" ? "キャンセル済み" : 
+                           subscription.status}
+                        </Text>
+                      </div>
+                      <Text variant="caption" color="muted">
+                        {new Date(subscription.created * 1000).toLocaleDateString("ja-JP")}
+                      </Text>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         );
 
