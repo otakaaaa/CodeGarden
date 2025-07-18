@@ -24,20 +24,21 @@ npm install
 
 ### 2. 環境変数設定
 
-`.env.local`ファイルを作成：
-
+`.env.docker or .env.local`ファイルを作成（以下参考）
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Stripe
-STRIPE_SECRET_KEY=your_stripe_secret_key
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-
-# App
+# App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NODE_ENV=development
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=3で作成した情報を入力
+NEXT_PUBLIC_SUPABASE_ANON_KEY=3で作成した情報を入力
+
+# Stripe Configuration
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
 ```
 
 ### 3. Supabaseセットアップ
@@ -46,7 +47,15 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 2. `supabase/migrations/001_create_projects_table.sql`を実行
 3. 環境変数に接続情報を設定
 
-### 4. 開発サーバー起動
+### 4. Stripeセットアップ
+
+1. [Stripe](https://stripe.com)でアカウント作成
+2. ダッシュボードで商品・価格を作成
+3. `src/lib/stripe/config.ts`の価格IDを更新
+4. Webhookエンドポイントを設定（`/api/webhooks/stripe`）
+5. 環境変数にキーを設定
+
+### 5. 開発サーバー起動
 
 #### ローカル（npm）
 ```bash
@@ -55,6 +64,7 @@ npm run dev
 
 #### Docker
 ```bash
+make build # 初回ビルド
 make up    # バックグラウンド起動
 make dev   # フォアグラウンド起動（ログ表示）
 ```

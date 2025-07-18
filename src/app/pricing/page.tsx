@@ -4,10 +4,15 @@ import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
 import { Text } from "@/components/ui";
 import { useState } from "react";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { createCheckoutSession, createCustomer, getStripe } from "@/lib/stripe/client";
+import { getPriceId } from "@/lib/stripe/config";
 
 export default function PricingPage() {
+  const { user } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showFAQ, setShowFAQ] = useState(false);
+  const [loading, setLoading] = useState(false);
   const plans = [
     {
       id: "free",
@@ -88,14 +93,58 @@ export default function PricingPage() {
 
   const handlePlanSelect = async (planId: string) => {
     setSelectedPlan(planId);
+    setLoading(true);
     
-    if (planId === "free") {
-      // Free plan - redirect to signup
-      window.location.href = "/auth/signup?plan=free";
-    } else {
-      // Paid plans - redirect to Stripe checkout (to be implemented)
-      // For now, just show an alert
-      alert(`${planId}プランの決済機能は近日実装予定です`);
+    try {
+      if (planId === "free") {
+        // Free plan - redirect to signup
+        window.location.href = "/auth/signup?plan=free";
+        return;
+      }
+
+      if (!user) {
+        // User not logged in - redirect to signup with selected plan
+        window.location.href = `/auth/signup?plan=${planId}`;
+        return;
+      }
+
+      // Create or get Stripe customer
+      const customerResponse = await createCustomer(
+        user.email!,
+        user.user_metadata?.display_name || user.email!,
+        user.id
+      );
+
+      // Get the price ID for the selected plan
+      const priceId = getPriceId(planId);
+      if (!priceId) {
+        throw new Error("価格IDが見つかりません");
+      }
+
+      // Create checkout session
+      const { sessionId } = await createCheckoutSession({
+        priceId,
+        customerId: customerResponse.customerId,
+        successUrl: `${window.location.origin}/account?success=true&plan=${planId}`,
+        cancelUrl: `${window.location.origin}/pricing?canceled=true`,
+      });
+
+      // Redirect to Stripe Checkout
+      const stripe = await getStripe();
+      if (!stripe) {
+        throw new Error("Stripe initialization failed");
+      }
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error("Plan selection error:", error);
+      alert("決済処理でエラーが発生しました。もう一度お試しください。");
+    } finally {
+      setLoading(false);
+      setSelectedPlan(null);
     }
   };
 
@@ -187,9 +236,11 @@ export default function PricingPage() {
                   className="w-full"
                   size="lg"
                   onClick={() => handlePlanSelect(plan.id)}
-                  loading={selectedPlan === plan.id}
+                  loading={loading && selectedPlan === plan.id}
+                  disabled={loading}
                 >
-                  {plan.name === "Free" ? "無料で始める" : "プランを選択"}
+                  {plan.name === "Free" ? "無料で始める" : 
+                   loading && selectedPlan === plan.id ? "処理中..." : "プランを選択"}
                 </Button>
               </div>
             ))}
