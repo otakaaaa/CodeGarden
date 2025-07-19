@@ -144,8 +144,8 @@ export default function ProjectsPage() {
   if (authLoading || loading) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="w-8 h-8 animate-spin rounded-full border-2 border-gray-300 border-t-green-500"></div>
+        <div className="flex items-center justify-center min-h-[50vh] bg-black">
+          <div className="w-8 h-8 animate-spin rounded-full border-2 border-gray-700 border-t-green-500"></div>
         </div>
       </MainLayout>
     );
@@ -157,12 +157,13 @@ export default function ProjectsPage() {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-black min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="mb-4 lg:mb-0">
-            <Text variant="heading" className="mb-2">プロジェクト</Text>
-            <Text variant="body" color="muted">
+            <Text variant="heading" className="mb-2 text-white">プロジェクト</Text>
+            <Text variant="body" className="text-gray-400">
               あなたのプロジェクト一覧です ({projects.length}個)
             </Text>
           </div>
@@ -179,8 +180,9 @@ export default function ProjectsPage() {
                 placeholder="プロジェクトを検索..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-gray-900 border-gray-700 text-white placeholder-gray-500 focus:border-green-500 focus:ring-green-500"
                 leftIcon={
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 }
@@ -191,17 +193,17 @@ export default function ProjectsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                className="px-3 py-2 bg-gray-900 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
               >
                 <option value="updated">最新更新順</option>
                 <option value="created">作成日順</option>
                 <option value="name">名前順</option>
               </select>
               
-              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex border border-gray-700 rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`px-3 py-2 ${viewMode === "grid" ? "bg-green-50 text-green-600" : "text-gray-600 hover:bg-gray-50"}`}
+                  className={`px-3 py-2 ${viewMode === "grid" ? "bg-green-900 text-green-400" : "text-gray-400 hover:bg-gray-800"}`}
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
@@ -209,7 +211,7 @@ export default function ProjectsPage() {
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`px-3 py-2 ${viewMode === "list" ? "bg-green-50 text-green-600" : "text-gray-600 hover:bg-gray-50"}`}
+                  className={`px-3 py-2 ${viewMode === "list" ? "bg-green-900 text-green-400" : "text-gray-400 hover:bg-gray-800"}`}
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
@@ -222,7 +224,7 @@ export default function ProjectsPage() {
 
         {/* Error */}
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-6 bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg">
             {error}
           </div>
         )}
@@ -230,13 +232,13 @@ export default function ProjectsPage() {
         {/* Projects Display */}
         {filteredProjects.length === 0 && projects.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <Text variant="title" className="mb-2">プロジェクトがありません</Text>
-            <Text variant="body" color="muted" className="mb-6">
+            <Text variant="title" className="mb-2 text-white">プロジェクトがありません</Text>
+            <Text variant="body" className="mb-6 text-gray-400">
               最初のプロジェクトを作成して、プログラミング学習を始めましょう
             </Text>
             <Button onClick={() => setShowTemplateModal(true)} loading={createLoading}>
@@ -245,15 +247,15 @@ export default function ProjectsPage() {
           </div>
         ) : filteredProjects.length === 0 ? (
           <div className="text-center py-12">
-            <Text variant="title" className="mb-2">検索結果が見つかりません</Text>
-            <Text variant="body" color="muted">
+            <Text variant="title" className="mb-2 text-white">検索結果が見つかりません</Text>
+            <Text variant="body" className="text-gray-400">
               検索条件を変更してお試しください
             </Text>
           </div>
         ) : (
           <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}>
             {filteredProjects.map((project) => (
-              <div key={project.id} className={`group relative bg-white border border-gray-200 rounded-lg ${viewMode === "grid" ? "p-6" : "p-4"} hover:shadow-lg transition-all`}>
+              <div key={project.id} className={`group relative bg-gray-900 border border-gray-800 rounded-lg ${viewMode === "grid" ? "p-6" : "p-4"} hover:border-gray-700 hover:shadow-lg hover:shadow-green-900/20 transition-all`}>
                 {/* Project Link */}
                 <Link
                   href={`/projects/${project.id}`}
@@ -262,29 +264,29 @@ export default function ProjectsPage() {
                   <div className={`flex ${viewMode === "list" ? "items-center justify-between" : "flex-col"}`}>
                     <div className={`${viewMode === "list" ? "flex-1" : ""}`}>
                       <div className={`flex items-center ${viewMode === "list" ? "justify-between" : "justify-start mb-4"}`}>
-                        <Text variant="subtitle" className="group-hover:text-green-600 transition-colors">
+                        <Text variant="subtitle" className="text-white group-hover:text-green-400 transition-colors">
                           {project.name}
                         </Text>
                         {viewMode === "grid" && (
-                          <Text variant="caption" color="muted">
+                          <Text variant="caption" className="text-gray-500">
                             {project.data.nodes.length} パーツ
                           </Text>
                         )}
                       </div>
                       
                       <div className={`${viewMode === "list" ? "flex items-center space-x-4" : "space-y-2"}`}>
-                        <Text variant="caption" color="muted">
+                        <Text variant="caption" className="text-gray-500">
                           最終更新: {new Date(project.updated_at).toLocaleDateString("ja-JP")}
                         </Text>
                         {viewMode === "list" && (
-                          <Text variant="caption" color="muted">
+                          <Text variant="caption" className="text-gray-500">
                             {project.data.nodes.length} パーツ
                           </Text>
                         )}
                       </div>
                       
                       {viewMode === "grid" && (
-                        <div className="flex items-center text-sm text-gray-500 mt-4">
+                        <div className="flex items-center text-sm text-gray-400 mt-4">
                           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 6l-4-2v4l4-2z" clipRule="evenodd" />
                           </svg>
@@ -333,22 +335,22 @@ export default function ProjectsPage() {
 
         {/* Template Modal */}
         {showTemplateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-gray-200">
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+            <div className="bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-gray-800">
                 <div className="flex items-center justify-between">
-                  <Text variant="title">新しいプロジェクトを作成</Text>
+                  <Text variant="title" className="text-white">新しいプロジェクトを作成</Text>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowTemplateModal(false)}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </Button>
                 </div>
-                <Text variant="body" color="muted" className="mt-2">
+                <Text variant="body" className="mt-2 text-gray-400">
                   テンプレートを選択してプロジェクトを始めましょう
                 </Text>
               </div>
@@ -360,18 +362,18 @@ export default function ProjectsPage() {
                       key={template.id}
                       onClick={() => handleCreateProject(template.id)}
                       disabled={createLoading}
-                      className="text-left p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors disabled:opacity-50"
+                      className="text-left p-4 bg-gray-800 border border-gray-700 rounded-lg hover:border-green-600 hover:bg-gray-800/70 transition-colors disabled:opacity-50"
                     >
                       <div className="flex items-start space-x-3">
                         <span className="text-2xl">{template.icon}</span>
                         <div className="flex-1">
-                          <Text variant="body" weight="medium" className="mb-1">
+                          <Text variant="body" weight="medium" className="mb-1 text-white">
                             {template.name}
                           </Text>
-                          <Text variant="caption" color="muted" className="mb-2">
+                          <Text variant="caption" className="mb-2 text-gray-400">
                             {template.description}
                           </Text>
-                          <Text variant="caption" color="muted">
+                          <Text variant="caption" className="text-gray-500">
                             {template.components}個のコンポーネント
                           </Text>
                         </div>
@@ -383,6 +385,7 @@ export default function ProjectsPage() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </MainLayout>
   );

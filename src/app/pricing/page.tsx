@@ -150,17 +150,18 @@ export default function PricingPage() {
 
   return (
     <MainLayout>
+      <div className="bg-black min-h-screen">
       <div className="py-12 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
               料金プラン
             </h1>
-            <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="mt-4 text-xl text-gray-300 font-medium max-w-2xl mx-auto">
               あなたの学習スタイルに合わせてプランをお選びください
             </p>
-            <div className="mt-8 inline-flex items-center bg-green-50 text-green-800 px-4 py-2 rounded-full">
+            <div className="mt-8 inline-flex items-center bg-green-900 text-green-300 px-4 py-2 rounded-full font-semibold border border-green-700">
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
               </svg>
@@ -175,32 +176,32 @@ export default function PricingPage() {
                 key={plan.name}
                 className={`relative rounded-2xl p-8 ${
                   plan.popular
-                    ? "bg-green-50 border-2 border-green-500 shadow-lg"
-                    : "bg-white border border-gray-200 shadow-sm"
+                    ? "bg-gradient-to-br from-green-950 to-green-900 border-2 border-green-500 shadow-xl"
+                    : "bg-gray-900 border-2 border-gray-700 shadow-md hover:shadow-lg transition-shadow duration-300"
                 }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-green-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
                       人気プラン
                     </span>
                   </div>
                 )}
 
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
+                  <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
                   <div className="mt-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                    <span className="text-gray-600 ml-2">{plan.period}</span>
+                    <span className="text-4xl font-bold text-white">{plan.price}</span>
+                    <span className="text-gray-400 font-medium ml-2">{plan.period}</span>
                   </div>
-                  <p className="mt-4 text-gray-600">{plan.description}</p>
+                  <p className="mt-4 text-gray-300 font-medium">{plan.description}</p>
                 </div>
 
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start">
                       <svg
-                        className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 text-green-600 mr-3 mt-0.5 flex-shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -210,13 +211,13 @@ export default function PricingPage() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-gray-200 font-medium">{feature}</span>
                     </li>
                   ))}
                   {plan.limitations?.map((limitation) => (
                     <li key={limitation} className="flex items-start">
                       <svg
-                        className="w-5 h-5 text-gray-400 mr-3 mt-0.5 flex-shrink-0"
+                        className="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -226,14 +227,14 @@ export default function PricingPage() {
                           clipRule="evenodd"
                         />
                       </svg>
-                      <span className="text-gray-500">{limitation}</span>
+                      <span className="text-gray-400">{limitation}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button
-                  variant={plan.popular ? "primary" : "outline"}
-                  className="w-full"
+                  variant={plan.popular ? "primary" : "secondary"}
+                  className={`w-full ${!plan.popular ? "!bg-gray-800 !text-white hover:!bg-gray-700 !border-gray-600" : ""}`}
                   size="lg"
                   onClick={() => handlePlanSelect(plan.id)}
                   loading={loading && selectedPlan === plan.id}
@@ -249,54 +250,54 @@ export default function PricingPage() {
           {/* Compare Plans */}
           <div className="mt-20">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-extrabold text-white mb-4">
                 プラン比較表
               </h2>
-              <p className="text-gray-600">
+              <p className="text-gray-300 font-medium">
                 各プランの機能を詳しく比較できます
               </p>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse bg-white rounded-lg shadow-sm">
+              <table className="w-full border-collapse bg-gray-900 rounded-lg shadow-md border border-gray-700">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-4 px-6 font-semibold text-gray-900">機能</th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-900">Free</th>
-                    <th className="text-center py-4 px-6 font-semibold text-green-600 bg-green-50">Pro</th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-900">Team</th>
+                  <tr className="border-b-2 border-gray-700 bg-gray-800">
+                    <th className="text-left py-4 px-6 font-bold text-white">機能</th>
+                    <th className="text-center py-4 px-6 font-bold text-white">Free</th>
+                    <th className="text-center py-4 px-6 font-bold text-green-400 bg-gradient-to-b from-green-950 to-green-900">Pro</th>
+                    <th className="text-center py-4 px-6 font-bold text-white">Team</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-gray-100">
-                    <td className="py-4 px-6 text-gray-700">プロジェクト数</td>
-                    <td className="py-4 px-6 text-center text-gray-600">1個</td>
-                    <td className="py-4 px-6 text-center text-green-600 bg-green-50">無制限</td>
-                    <td className="py-4 px-6 text-center text-gray-600">無制限</td>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-4 px-6 text-gray-300 font-medium">プロジェクト数</td>
+                    <td className="py-4 px-6 text-center text-gray-400 font-semibold">1個</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-semibold bg-green-950">無制限</td>
+                    <td className="py-4 px-6 text-center text-gray-400 font-semibold">無制限</td>
                   </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="py-4 px-6 text-gray-700">クラウド保存</td>
-                    <td className="py-4 px-6 text-center text-red-500">✗</td>
-                    <td className="py-4 px-6 text-center text-green-500 bg-green-50">✓</td>
-                    <td className="py-4 px-6 text-center text-green-500">✓</td>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-4 px-6 text-gray-300 font-medium">クラウド保存</td>
+                    <td className="py-4 px-6 text-center text-red-400 font-bold">✗</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-bold bg-green-950">✓</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-bold">✓</td>
                   </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="py-4 px-6 text-gray-700">公開リンク</td>
-                    <td className="py-4 px-6 text-center text-red-500">✗</td>
-                    <td className="py-4 px-6 text-center text-green-500 bg-green-50">✓</td>
-                    <td className="py-4 px-6 text-center text-green-500">✓</td>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-4 px-6 text-gray-300 font-medium">公開リンク</td>
+                    <td className="py-4 px-6 text-center text-red-400 font-bold">✗</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-bold bg-green-950">✓</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-bold">✓</td>
                   </tr>
-                  <tr className="border-b border-gray-100">
-                    <td className="py-4 px-6 text-gray-700">共同編集</td>
-                    <td className="py-4 px-6 text-center text-red-500">✗</td>
-                    <td className="py-4 px-6 text-center text-red-500 bg-green-50">✗</td>
-                    <td className="py-4 px-6 text-center text-green-500">✓</td>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-4 px-6 text-gray-300 font-medium">共同編集</td>
+                    <td className="py-4 px-6 text-center text-red-400 font-bold">✗</td>
+                    <td className="py-4 px-6 text-center text-red-400 font-bold bg-green-950">✗</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-bold">✓</td>
                   </tr>
                   <tr>
-                    <td className="py-4 px-6 text-gray-700">サポート</td>
-                    <td className="py-4 px-6 text-center text-gray-600">コミュニティ</td>
-                    <td className="py-4 px-6 text-center text-green-600 bg-green-50">メール</td>
-                    <td className="py-4 px-6 text-center text-gray-600">専任担当</td>
+                    <td className="py-4 px-6 text-gray-300 font-medium">サポート</td>
+                    <td className="py-4 px-6 text-center text-gray-400 font-semibold">コミュニティ</td>
+                    <td className="py-4 px-6 text-center text-green-400 font-semibold bg-green-950">メール</td>
+                    <td className="py-4 px-6 text-center text-gray-400 font-semibold">専任担当</td>
                   </tr>
                 </tbody>
               </table>
@@ -306,14 +307,15 @@ export default function PricingPage() {
           {/* FAQ */}
           <div className="mt-20">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl font-extrabold text-white mb-4">
                 よくある質問
               </h2>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-300 font-medium mb-8">
                 ご不明な点がございましたら、お気軽にお問い合わせください
               </p>
               <Button
                 variant="outline"
+                className="!bg-gray-800 !text-white hover:!bg-gray-700 !border-gray-600"
                 onClick={() => setShowFAQ(!showFAQ)}
               >
                 {showFAQ ? "FAQを閉じる" : "FAQを表示"}
@@ -323,46 +325,56 @@ export default function PricingPage() {
             {showFAQ && (
               <div className="max-w-3xl mx-auto space-y-6">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  <div key={index} className="bg-gray-900 rounded-lg shadow-md border-2 border-gray-700 p-6">
+                    <h3 className="text-lg font-semibold text-white mb-3">
                       {faq.question}
                     </h3>
-                    <Text variant="body" color="muted">
+                    <p className="text-gray-300 leading-relaxed">
                       {faq.answer}
-                    </Text>
+                    </p>
                   </div>
                 ))}
               </div>
             )}
 
             <div className="text-center mt-12">
-              <Text variant="body" color="muted" className="mb-4">
+              <p className="text-gray-300 font-medium mb-4">
                 他にご質問がございましたらお気軽にお問い合わせください
-              </Text>
-              <Button variant="outline" onClick={() => window.location.href = "mailto:support@codegarden.jp"}>
+              </p>
+              <Button 
+                variant="outline" 
+                className="!bg-gray-800 !text-white hover:!bg-gray-700 !border-gray-600"
+                onClick={() => window.location.href = "mailto:support@codegarden.jp"}
+              >
                 お問い合わせ
               </Button>
             </div>
           </div>
 
           {/* CTA Section */}
-          <div className="mt-20 bg-green-50 rounded-2xl p-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="mt-20 bg-gradient-to-r from-green-900 to-green-800 rounded-2xl p-12 text-center shadow-xl border-2 border-green-600">
+            <h2 className="text-3xl font-extrabold text-white mb-4">
               今すぐプログラミング学習を始めましょう
             </h2>
-            <Text variant="body" color="muted" className="mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-green-100 font-medium mb-8 max-w-2xl mx-auto">
               CodeGardenで視覚的にプログラミングを学び、実際のアプリケーション開発スキルを身につけることができます。
-            </Text>
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" onClick={() => handlePlanSelect("free")}>
                 無料で始める
               </Button>
-              <Button variant="outline" size="lg" onClick={() => handlePlanSelect("pro")}>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="!bg-gray-800 !text-white hover:!bg-gray-700 !border-gray-600"
+                onClick={() => handlePlanSelect("pro")}
+              >
                 Proプランを選択
               </Button>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </MainLayout>
   );
