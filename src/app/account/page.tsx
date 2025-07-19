@@ -230,8 +230,10 @@ interface Subscription {
   if (authLoading) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="w-8 h-8 animate-spin rounded-full border-2 border-gray-300 border-t-green-500"></div>
+        <div className="min-h-screen bg-black">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="w-8 h-8 animate-spin rounded-full border-2 border-gray-700 border-t-green-500"></div>
+          </div>
         </div>
       </MainLayout>
     );
@@ -247,13 +249,14 @@ interface Subscription {
         return (
           <div className="space-y-6">
             {/* Basic Information */}
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-gray-800">
               <div className="flex items-center justify-between mb-4">
-                <Text variant="subtitle">基本情報</Text>
+                <Text variant="subtitle" className="text-white">基本情報</Text>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setIsEditingProfile(!isEditingProfile)}
+                  className="border-gray-700 hover:bg-gray-800"
                 >
                   {isEditingProfile ? "キャンセル" : "編集"}
                 </Button>
@@ -261,21 +264,26 @@ interface Subscription {
 
               {isEditingProfile ? (
                 <form onSubmit={handleProfileUpdate} className="space-y-4">
-                  <Input
-                    label="表示名"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="表示名を入力"
-                  />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      表示名
+                    </label>
+                    <input
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="表示名を入力"
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500 placeholder-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       自己紹介
                     </label>
                     <textarea
                       value={bio}
                       onChange={(e) => setBio(e.target.value)}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500 placeholder-gray-500"
                       placeholder="自己紹介を入力"
                     />
                   </div>
@@ -286,28 +294,28 @@ interface Subscription {
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <Text variant="caption" weight="semibold" color="muted">
+                    <Text variant="caption" weight="semibold" className="text-gray-400">
                       メールアドレス
                     </Text>
-                    <Text variant="body">{user.email}</Text>
+                    <Text variant="body" className="text-white">{user.email}</Text>
                   </div>
                   <div>
-                    <Text variant="caption" weight="semibold" color="muted">
+                    <Text variant="caption" weight="semibold" className="text-gray-400">
                       表示名
                     </Text>
-                    <Text variant="body">{displayName || "未設定"}</Text>
+                    <Text variant="body" className="text-white">{displayName || "未設定"}</Text>
                   </div>
                   <div>
-                    <Text variant="caption" weight="semibold" color="muted">
+                    <Text variant="caption" weight="semibold" className="text-gray-400">
                       自己紹介
                     </Text>
-                    <Text variant="body">{bio || "未設定"}</Text>
+                    <Text variant="body" className="text-white">{bio || "未設定"}</Text>
                   </div>
                   <div>
-                    <Text variant="caption" weight="semibold" color="muted">
+                    <Text variant="caption" weight="semibold" className="text-gray-400">
                       登録日
                     </Text>
-                    <Text variant="body">
+                    <Text variant="body" className="text-white">
                       {new Date(user.created_at).toLocaleDateString("ja-JP")}
                     </Text>
                   </div>
@@ -321,26 +329,36 @@ interface Subscription {
         return (
           <div className="space-y-6">
             {/* Password Change */}
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-              <Text variant="subtitle" className="mb-4">パスワード変更</Text>
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-gray-800">
+              <Text variant="subtitle" className="mb-4 text-white">パスワード変更</Text>
               
               <form onSubmit={handlePasswordUpdate} className="space-y-4">
-                <Input
-                  type="password"
-                  label="新しいパスワード"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="8文字以上のパスワード"
-                  required
-                />
-                <Input
-                  type="password"
-                  label="新しいパスワード確認"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="新しいパスワードを再入力"
-                  required
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    新しいパスワード
+                  </label>
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="8文字以上のパスワード"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500 placeholder-gray-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    新しいパスワード確認
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="新しいパスワードを再入力"
+                    required
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-green-500 focus:border-green-500 placeholder-gray-500"
+                  />
+                </div>
                 <Button type="submit" loading={loading}>
                   パスワードを更新
                 </Button>
@@ -348,26 +366,26 @@ interface Subscription {
             </div>
 
             {/* Security Settings */}
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-              <Text variant="subtitle" className="mb-4">セキュリティ設定</Text>
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-gray-800">
+              <Text variant="subtitle" className="mb-4 text-white">セキュリティ設定</Text>
               
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
                   <div>
-                    <Text variant="body" weight="medium">二段階認証</Text>
-                    <Text variant="caption" color="muted">アカウントのセキュリティを強化</Text>
+                    <Text variant="body" weight="medium" className="text-white">二段階認証</Text>
+                    <Text variant="caption" className="text-gray-400">アカウントのセキュリティを強化</Text>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="border-gray-700 hover:bg-gray-700">
                     設定（近日公開）
                   </Button>
                 </div>
                 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
                   <div>
-                    <Text variant="body" weight="medium">ログイン通知</Text>
-                    <Text variant="caption" color="muted">新しいデバイスからのログイン時に通知</Text>
+                    <Text variant="body" weight="medium" className="text-white">ログイン通知</Text>
+                    <Text variant="caption" className="text-gray-400">新しいデバイスからのログイン時に通知</Text>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="border-gray-700 hover:bg-gray-700">
                     設定（近日公開）
                   </Button>
                 </div>
@@ -383,15 +401,16 @@ interface Subscription {
         return (
           <div className="space-y-6">
             {/* Current Plan */}
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-gray-800">
               <div className="flex items-center justify-between mb-4">
-                <Text variant="subtitle">現在のプラン</Text>
+                <Text variant="subtitle" className="text-white">現在のプラン</Text>
                 {customerId && (
                   <Button 
                     variant="outline" 
                     size="sm" 
                     onClick={handleCustomerPortal}
                     loading={subscriptionLoading}
+                    className="border-gray-700 hover:bg-gray-800"
                   >
                     請求情報を管理
                   </Button>
@@ -400,17 +419,17 @@ interface Subscription {
               
               {currentSubscription ? (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between p-4 bg-blue-900/20 rounded-lg border border-blue-800">
                     <div>
-                      <Text variant="body" weight="semibold" color="primary">
+                      <Text variant="body" weight="semibold" className="text-blue-400">
                         {plan?.name || "Pro"} プラン
                       </Text>
-                      <Text variant="caption" color="muted">
+                      <Text variant="caption" className="text-gray-400">
                         ステータス: {currentSubscription.status === "active" ? "有効" : 
                                    currentSubscription.status === "trialing" ? "トライアル中" : 
                                    currentSubscription.cancel_at_period_end ? "キャンセル済み" : "不明"}
                       </Text>
-                      <Text variant="caption" color="muted">
+                      <Text variant="caption" className="text-gray-400">
                         次回更新: {new Date(currentSubscription.current_period_end * 1000).toLocaleDateString("ja-JP")}
                       </Text>
                     </div>
@@ -430,11 +449,12 @@ interface Subscription {
                           size="sm"
                           onClick={() => handleCancelSubscription(currentSubscription.id)}
                           loading={subscriptionLoading}
+                          className="border-gray-700 hover:bg-gray-800"
                         >
                           キャンセル
                         </Button>
                       )}
-                      <Button variant="outline" size="sm" onClick={() => router.push("/pricing")}>
+                      <Button variant="outline" size="sm" onClick={() => router.push("/pricing")} className="border-gray-700 text-gray-300 hover:bg-gray-800">
                         プラン変更
                       </Button>
                     </div>
@@ -442,12 +462,12 @@ interface Subscription {
 
                   {plan && (
                     <div className="mt-6">
-                      <Text variant="body" weight="medium" className="mb-3">プランの特典</Text>
+                      <Text variant="body" weight="medium" className="mb-3 text-white">プランの特典</Text>
                       <ul className="space-y-2">
                         {plan.features.map((feature, index) => (
                           <li key={index} className="flex items-center">
-                            <span className="text-green-500 mr-2">✓</span>
-                            <Text variant="caption">{feature}</Text>
+                            <span className="text-green-400 mr-2">✓</span>
+                            <Text variant="caption" className="text-gray-300">{feature}</Text>
                           </li>
                         ))}
                       </ul>
@@ -455,10 +475,10 @@ interface Subscription {
                   )}
                 </div>
               ) : (
-                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center justify-between p-4 bg-green-900/20 rounded-lg border border-green-800">
                   <div>
-                    <Text variant="body" weight="semibold" color="success">Free プラン</Text>
-                    <Text variant="caption" color="muted">1プロジェクト、ローカル保存のみ</Text>
+                    <Text variant="body" weight="semibold" className="text-green-400">Free プラン</Text>
+                    <Text variant="caption" className="text-gray-400">1プロジェクト、ローカル保存のみ</Text>
                   </div>
                   <Button variant="primary" onClick={() => router.push("/pricing")}>
                     プランをアップグレード
@@ -469,22 +489,22 @@ interface Subscription {
 
             {/* Subscription History */}
             {subscriptions.length > 0 && (
-              <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-                <Text variant="subtitle" className="mb-4">サブスクリプション履歴</Text>
+              <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-gray-800">
+                <Text variant="subtitle" className="mb-4 text-white">サブスクリプション履歴</Text>
                 <div className="space-y-3">
                   {subscriptions.map((subscription, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                       <div>
-                        <Text variant="body" weight="medium">
+                        <Text variant="body" weight="medium" className="text-white">
                           {getPlanByPriceId(subscription.items.data[0]?.price.id)?.name || "Unknown Plan"}
                         </Text>
-                        <Text variant="caption" color="muted">
+                        <Text variant="caption" className="text-gray-400">
                           {subscription.status === "active" ? "有効" : 
                            subscription.status === "canceled" ? "キャンセル済み" : 
                            subscription.status}
                         </Text>
                       </div>
-                      <Text variant="caption" color="muted">
+                      <Text variant="caption" className="text-gray-400">
                         {new Date(subscription.created * 1000).toLocaleDateString("ja-JP")}
                       </Text>
                     </div>
@@ -498,32 +518,32 @@ interface Subscription {
       case "usage":
         return (
           <div className="space-y-6">
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-gray-200">
-              <Text variant="subtitle" className="mb-4">使用状況</Text>
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-gray-800">
+              <Text variant="subtitle" className="mb-4 text-white">使用状況</Text>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <Text variant="caption" color="muted">プロジェクト数</Text>
-                  <Text variant="title">0 / 1</Text>
-                  <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "0%" }}></div>
+                <div className="bg-blue-900/20 p-4 rounded-lg border border-blue-800">
+                  <Text variant="caption" className="text-gray-400">プロジェクト数</Text>
+                  <Text variant="title" className="text-white">0 / 1</Text>
+                  <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: "0%" }}></div>
                   </div>
                 </div>
                 
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <Text variant="caption" color="muted">今月のアクティブ日数</Text>
-                  <Text variant="title">0日</Text>
-                  <Text variant="caption" color="muted">最後のログイン: 今日</Text>
+                <div className="bg-green-900/20 p-4 rounded-lg border border-green-800">
+                  <Text variant="caption" className="text-gray-400">今月のアクティブ日数</Text>
+                  <Text variant="title" className="text-white">0日</Text>
+                  <Text variant="caption" className="text-gray-400">最後のログイン: 今日</Text>
                 </div>
                 
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <Text variant="caption" color="muted">作成したコンポーネント</Text>
-                  <Text variant="title">0個</Text>
+                <div className="bg-purple-900/20 p-4 rounded-lg border border-purple-800">
+                  <Text variant="caption" className="text-gray-400">作成したコンポーネント</Text>
+                  <Text variant="title" className="text-white">0個</Text>
                 </div>
                 
-                <div className="bg-yellow-50 p-4 rounded-lg">
-                  <Text variant="caption" color="muted">学習時間</Text>
-                  <Text variant="title">0時間</Text>
+                <div className="bg-yellow-900/20 p-4 rounded-lg border border-yellow-800">
+                  <Text variant="caption" className="text-gray-400">学習時間</Text>
+                  <Text variant="title" className="text-white">0時間</Text>
                 </div>
               </div>
             </div>
@@ -534,29 +554,29 @@ interface Subscription {
         return (
           <div className="space-y-6">
             {/* Logout */}
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-red-200">
-              <Text variant="subtitle" className="mb-4" color="danger">ログアウト</Text>
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-red-800">
+              <Text variant="subtitle" className="mb-4 text-red-400">ログアウト</Text>
               
               <div className="flex items-center justify-between">
                 <div>
-                  <Text variant="body">現在のセッションからログアウトします</Text>
-                  <Text variant="caption" color="muted">保存されていないデータは失われます</Text>
+                  <Text variant="body" className="text-white">現在のセッションからログアウトします</Text>
+                  <Text variant="caption" className="text-gray-400">保存されていないデータは失われます</Text>
                 </div>
-                <Button variant="outline" onClick={handleSignOut}>
+                <Button variant="outline" onClick={handleSignOut} className="border-gray-700 hover:bg-gray-800">
                   ログアウト
                 </Button>
               </div>
             </div>
 
             {/* Account Deletion */}
-            <div className="bg-white shadow-sm rounded-lg p-6 border border-red-200">
-              <Text variant="subtitle" className="mb-4" color="danger">アカウント削除</Text>
+            <div className="bg-gray-900 shadow-sm rounded-lg p-6 border border-red-800">
+              <Text variant="subtitle" className="mb-4 text-red-400">アカウント削除</Text>
               
               {!showDeleteConfirm ? (
                 <div className="flex items-center justify-between">
                   <div>
-                    <Text variant="body">アカウントとすべてのデータを完全に削除します</Text>
-                    <Text variant="caption" color="muted">この操作は取り消すことができません</Text>
+                    <Text variant="body" className="text-white">アカウントとすべてのデータを完全に削除します</Text>
+                    <Text variant="caption" className="text-gray-400">この操作は取り消すことができません</Text>
                   </div>
                   <Button variant="danger" onClick={() => setShowDeleteConfirm(true)}>
                     アカウントを削除
@@ -564,18 +584,19 @@ interface Subscription {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                    <Text variant="body" weight="semibold" color="danger">注意！</Text>
-                    <Text variant="caption">
+                  <div className="bg-red-900/20 p-4 rounded-lg border border-red-700">
+                    <Text variant="body" weight="semibold" className="text-red-400">注意！</Text>
+                    <Text variant="caption" className="text-gray-300">
                       この操作によりアカウント、プロジェクト、すべてのデータが完全に削除されます。
                       削除を実行するには下記に「DELETE」と入力してください。
                     </Text>
                   </div>
                   
-                  <Input
+                  <input
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                     placeholder="DELETE と入力"
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-red-500 focus:border-red-500 placeholder-gray-500"
                   />
                   
                   <div className="flex space-x-3">
@@ -593,6 +614,7 @@ interface Subscription {
                         setShowDeleteConfirm(false);
                         setDeleteConfirmText("");
                       }}
+                      className="border-gray-700 hover:bg-gray-800"
                     >
                       キャンセル
                     </Button>
@@ -610,56 +632,62 @@ interface Subscription {
 
   return (
     <MainLayout>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Text variant="heading" className="mb-2">アカウント設定</Text>
-          <Text variant="body" color="muted">
-            プロフィール、セキュリティ、プランの管理ができます
-          </Text>
-        </div>
-
-        {/* Alert Messages */}
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        )}
-        
-        {success && (
-          <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-            {success}
-          </div>
-        )}
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Navigation */}
-          <div className="lg:w-64 flex-shrink-0">
-            <nav className="bg-white shadow-sm rounded-lg border border-gray-200 p-4">
-              <div className="space-y-2">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-colors ${
-                      activeTab === tab.id
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
-                  >
-                    <span className="mr-3 text-lg">{tab.icon}</span>
-                    <Text variant="body" weight={activeTab === tab.id ? "medium" : "normal"}>
-                      {tab.label}
-                    </Text>
-                  </button>
-                ))}
-              </div>
-            </nav>
+      <div className="min-h-screen bg-black">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="mb-8">
+            <Text variant="heading" className="mb-2 text-white">アカウント設定</Text>
+            <Text variant="body" className="text-gray-400">
+              プロフィール、セキュリティ、プランの管理ができます
+            </Text>
           </div>
 
-          {/* Content */}
-          <div className="flex-1">
-            {renderContent()}
+          {/* Alert Messages */}
+          {error && (
+            <div className="mb-6 bg-red-900/20 border border-red-700 text-red-400 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
+          
+          {success && (
+            <div className="mb-6 bg-green-900/20 border border-green-700 text-green-400 px-4 py-3 rounded-lg">
+              {success}
+            </div>
+          )}
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Navigation */}
+            <div className="lg:w-64 flex-shrink-0">
+              <nav className="bg-gray-900 shadow-sm rounded-lg border border-gray-800 p-4">
+                <div className="space-y-2">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-colors ${
+                        activeTab === tab.id
+                          ? "bg-green-900/30 text-green-400 border-green-700"
+                          : "text-gray-300 hover:bg-gray-800"
+                      }`}
+                    >
+                      <span className="mr-3 text-lg">{tab.icon}</span>
+                      <Text
+                        className="text-white"
+                        variant="body"
+                        weight={activeTab === tab.id ? "medium" : "normal"}
+                      >
+                        {tab.label}
+                      </Text>
+                    </button>
+                  ))}
+                </div>
+              </nav>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1">
+              {renderContent()}
+            </div>
           </div>
         </div>
       </div>

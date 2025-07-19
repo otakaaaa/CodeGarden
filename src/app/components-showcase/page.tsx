@@ -9,7 +9,7 @@ export default function ComponentsShowcasePage() {
   const [password, setPassword] = useState("");
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-black py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <Text variant="heading" size="2xl" className="mb-4">
@@ -22,7 +22,7 @@ export default function ComponentsShowcasePage() {
 
         <div className="space-y-12">
           {/* Button Component */}
-          <section className="bg-white rounded-lg p-8 shadow-sm">
+          <section className="bg-gray-900 rounded-lg p-8 border border-gray-800">
             <Text variant="title" className="mb-6">
               Button コンポーネント
             </Text>
@@ -69,7 +69,7 @@ export default function ComponentsShowcasePage() {
           </section>
 
           {/* Text Component */}
-          <section className="bg-white rounded-lg p-8 shadow-sm">
+          <section className="bg-gray-900 rounded-lg p-8 border border-gray-800">
             <Text variant="title" className="mb-6">
               Text コンポーネント
             </Text>
@@ -124,16 +124,16 @@ export default function ComponentsShowcasePage() {
                   テキスト配置
                 </Text>
                 <div className="space-y-2">
-                  <Text align="left" className="border p-2">左寄せ</Text>
-                  <Text align="center" className="border p-2">中央寄せ</Text>
-                  <Text align="right" className="border p-2">右寄せ</Text>
+                  <Text align="left" className="border border-gray-700 p-2">左寄せ</Text>
+                  <Text align="center" className="border border-gray-700 p-2">中央寄せ</Text>
+                  <Text align="right" className="border border-gray-700 p-2">右寄せ</Text>
                 </div>
               </div>
             </div>
           </section>
 
           {/* Input Component */}
-          <section className="bg-white rounded-lg p-8 shadow-sm">
+          <section className="bg-gray-900 rounded-lg p-8 border border-gray-800">
             <Text variant="title" className="mb-6">
               Input コンポーネント
             </Text>
