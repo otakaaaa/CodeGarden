@@ -70,7 +70,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-8 pt-8">
           <p className="text-center text-gray-400 text-sm">
-            © 2024 CodeGarden. All rights reserved.
+            © 2025 CodeGarden. All rights reserved.
           </p>
         </div>
       </div>

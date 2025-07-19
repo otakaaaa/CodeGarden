@@ -162,9 +162,8 @@ export default function ProjectsPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="mb-4 lg:mb-0">
-            <Text variant="heading" className="mb-2 text-white">プロジェクト</Text>
-            <Text variant="body" className="text-gray-400">
-              あなたのプロジェクト一覧です ({projects.length}個)
+            <Text variant="heading" className="mb-2 text-white">
+              プロジェクト({projects.length})
             </Text>
           </div>
           <Button onClick={() => setShowTemplateModal(true)} loading={createLoading}>
@@ -263,26 +262,19 @@ export default function ProjectsPage() {
                 >
                   <div className={`flex ${viewMode === "list" ? "items-center justify-between" : "flex-col"}`}>
                     <div className={`${viewMode === "list" ? "flex-1" : ""}`}>
-                      <div className={`flex items-center ${viewMode === "list" ? "justify-between" : "justify-start mb-4"}`}>
+                      <div className={"flex items-center"}>
                         <Text variant="subtitle" className="text-white group-hover:text-green-400 transition-colors">
                           {project.name}
                         </Text>
-                        {viewMode === "grid" && (
-                          <Text variant="caption" className="text-gray-500">
-                            {project.data.nodes.length} パーツ
-                          </Text>
-                        )}
                       </div>
                       
-                      <div className={`${viewMode === "list" ? "flex items-center space-x-4" : "space-y-2"}`}>
+                      <div className={"flex items-center space-x-4"}>
                         <Text variant="caption" className="text-gray-500">
                           最終更新: {new Date(project.updated_at).toLocaleDateString("ja-JP")}
                         </Text>
-                        {viewMode === "list" && (
-                          <Text variant="caption" className="text-gray-500">
-                            {project.data.nodes.length} パーツ
-                          </Text>
-                        )}
+                        <Text variant="caption" className="text-gray-500">
+                          {project.data.nodes.length} パーツ
+                        </Text>
                       </div>
                       
                       {viewMode === "grid" && (
