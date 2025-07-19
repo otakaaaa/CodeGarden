@@ -59,8 +59,8 @@ export const projectSchema = z.object({
   user_id: z.string().uuid(),
   name: z.string().min(1, "プロジェクト名は必須です"),
   data: projectDataSchema,
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+  created_at: z.string(),
+  updated_at: z.string(),
   is_deleted: z.boolean().default(false),
 });
 
