@@ -201,12 +201,12 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
   };
 
   return (
-    <div className="flex-1 bg-white flex flex-col">
+    <div className="flex-1 bg-black flex flex-col">
       {/* Preview Header */}
-      <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+      <div className="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">プレビュー</h2>
-          <p className="text-sm text-gray-600">作成したアプリの動作を確認できます</p>
+          <h2 className="text-lg font-semibold text-white">プレビュー</h2>
+          <p className="text-sm text-gray-300">作成したアプリの動作を確認できます</p>
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -232,10 +232,10 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
         <div className={`${showDebugPanel ? "flex-1" : "w-full"} relative bg-white overflow-hidden`}>
           {nodes.length === 0 ? (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-gray-400">
                 <div className="text-6xl mb-4">🎨</div>
-                <Text variant="title" className="mb-2">まだコンポーネントがありません</Text>
-                <Text variant="caption">左のパレットからコンポーネントを追加してください</Text>
+                <Text variant="title" className="mb-2 text-black">まだコンポーネントがありません</Text>
+                <Text variant="caption" className="text-gray-700">左のパレットからコンポーネントを追加してください</Text>
               </div>
             </div>
           ) : (
@@ -246,12 +246,12 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
 
           {/* Preview Status */}
           <div className="absolute bottom-4 right-4">
-            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-3">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+            <div className="bg-gray-800 rounded-lg shadow-lg border border-gray-600 p-3">
+              <div className="flex items-center space-x-2 text-sm text-gray-300">
                 <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                 <span>プレビューモード</span>
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-400 mt-1">
                 {nodes.length}個のコンポーネント
               </div>
             </div>
@@ -260,15 +260,16 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
 
         {/* Debug Panel */}
         {showDebugPanel && (
-          <div className="w-80 bg-gray-50 border-l border-gray-200 flex flex-col">
+          <div className="w-80 bg-gray-900 border-l border-gray-700 flex flex-col">
             {/* Debug Header */}
-            <div className="px-4 py-3 border-b border-gray-200">
+            <div className="px-4 py-3 border-b border-gray-700">
               <div className="flex items-center justify-between">
-                <Text variant="subtitle">デバッグパネル</Text>
+                <Text variant="subtitle" className="text-white">デバッグパネル</Text>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearConsole}
+                  className="text-gray-300 hover:text-white"
                 >
                   クリア
                 </Button>
@@ -276,16 +277,16 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
             </div>
 
             {/* Variables */}
-            <div className="px-4 py-3 border-b border-gray-200">
-              <Text variant="caption" weight="semibold" className="mb-2">プロジェクト変数</Text>
+            <div className="px-4 py-3 border-b border-gray-700">
+              <Text variant="caption" weight="semibold" className="mb-2 text-white">プロジェクト変数</Text>
               {Object.keys(previewData.variables).length === 0 ? (
-                <Text variant="caption" color="muted">変数なし</Text>
+                <Text variant="caption" className="text-gray-400">変数なし</Text>
               ) : (
                 <div className="space-y-1">
                   {Object.entries(previewData.variables).map(([key, value]) => (
                     <div key={key} className="flex justify-between text-xs">
-                      <span className="font-mono">{key}:</span>
-                      <span className="font-mono text-blue-600">{String(value)}</span>
+                      <span className="font-mono text-gray-300">{key}:</span>
+                      <span className="font-mono text-blue-400">{String(value)}</span>
                     </div>
                   ))}
                 </div>
@@ -293,16 +294,16 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
             </div>
 
             {/* Node Values */}
-            <div className="px-4 py-3 border-b border-gray-200">
-              <Text variant="caption" weight="semibold" className="mb-2">ノード値</Text>
+            <div className="px-4 py-3 border-b border-gray-700">
+              <Text variant="caption" weight="semibold" className="mb-2 text-white">ノード値</Text>
               {Object.keys(previewData.nodeValues).length === 0 ? (
-                <Text variant="caption" color="muted">値なし</Text>
+                <Text variant="caption" className="text-gray-400">値なし</Text>
               ) : (
                 <div className="space-y-1">
                   {Object.entries(previewData.nodeValues).map(([nodeId, value]) => (
                     <div key={nodeId} className="text-xs">
-                      <div className="font-mono text-gray-600">{nodeId}:</div>
-                      <div className="font-mono text-green-600 ml-2">&quot;{value}&quot;</div>
+                      <div className="font-mono text-gray-300">{nodeId}:</div>
+                      <div className="font-mono text-green-400 ml-2">&quot;{value}&quot;</div>
                     </div>
                   ))}
                 </div>
@@ -311,15 +312,15 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
 
             {/* Console */}
             <div className="flex-1 flex flex-col">
-              <div className="px-4 py-2 border-b border-gray-200">
-                <Text variant="caption" weight="semibold">イベントログ</Text>
+              <div className="px-4 py-2 border-b border-gray-700">
+                <Text variant="caption" weight="semibold" className="text-white">イベントログ</Text>
               </div>
               <div 
                 ref={consoleRef}
                 className="flex-1 overflow-y-auto px-4 py-2 space-y-2"
               >
                 {consoleLog.length === 0 ? (
-                  <Text variant="caption" color="muted">ログなし</Text>
+                  <Text variant="caption" className="text-gray-400">ログなし</Text>
                 ) : (
                   consoleLog.map((log, index) => (
                     <div key={index} className="text-xs border-l-2 pl-2" style={{
@@ -330,11 +331,11 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
                           log.type === "error" ? "bg-red-500" : 
                           log.type === "event" ? "bg-green-500" : "bg-gray-400"
                         }`}></span>
-                        <span className="text-gray-500">
+                        <span className="text-gray-400">
                           {log.timestamp.toLocaleTimeString()}
                         </span>
                       </div>
-                      <div className="mt-1 font-mono text-gray-800">
+                      <div className="mt-1 font-mono text-gray-200">
                         {log.message}
                       </div>
                     </div>

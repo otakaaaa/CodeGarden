@@ -204,7 +204,7 @@ export default function ProjectEditorPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500"></div>
       </div>
     );
@@ -212,10 +212,10 @@ export default function ProjectEditorPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">エラーが発生しました</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <h1 className="text-2xl font-bold text-white mb-4">エラーが発生しました</h1>
+          <p className="text-gray-300 mb-4">{error}</p>
           <Button onClick={() => router.push("/projects")}>
             プロジェクト一覧に戻る
           </Button>
@@ -226,9 +226,9 @@ export default function ProjectEditorPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">プロジェクトが見つかりません</h1>
+          <h1 className="text-2xl font-bold text-white mb-4">プロジェクトが見つかりません</h1>
           <Button onClick={() => router.push("/projects")}>
             プロジェクト一覧に戻る
           </Button>
@@ -238,17 +238,18 @@ export default function ProjectEditorPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-black">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <header className="bg-gray-900 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Button
             variant="outline"
             onClick={() => router.push("/projects")}
+            className="border-gray-600 hover:bg-gray-800 hover:text-white"
           >
             ← 戻る
           </Button>
-          <h1 className="text-xl font-semibold text-gray-900">{project.name}</h1>
+          <h1 className="text-xl font-semibold text-white">{project.name}</h1>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -256,6 +257,7 @@ export default function ProjectEditorPage() {
             <Button
               variant="outline"
               onClick={() => setIsFullscreenPreview(!isFullscreenPreview)}
+              className="border-gray-600 hover:bg-gray-800 hover:text-white"
             >
               {isFullscreenPreview ? "縮小表示" : "フルスクリーン"}
             </Button>
@@ -263,6 +265,7 @@ export default function ProjectEditorPage() {
           <Button
             variant="outline"
             onClick={() => setShowPreview(!showPreview)}
+            className="border-gray-600 hover:bg-gray-800 hover:text-white"
           >
             {showPreview ? "編集モード" : "プレビュー"}
           </Button>
@@ -296,7 +299,7 @@ export default function ProjectEditorPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setShowPreview(false)}
-                    className="border-gray-600 text-white hover:bg-gray-800"
+                    className="border-gray-600 hover:bg-gray-800 hover:text-white"
                   >
                     編集に戻る
                   </Button>
@@ -330,9 +333,9 @@ export default function ProjectEditorPage() {
                 <Background />
                 <Controls />
                 <Panel position="top-left">
-                  <div className="bg-white rounded-lg shadow-lg p-4">
-                    <h3 className="font-semibold text-gray-900 mb-2">操作方法</h3>
-                    <ul className="text-sm text-gray-600 space-y-1">
+                  <div className="bg-gray-800 border border-gray-600 rounded-lg shadow-lg p-4">
+                    <h3 className="font-semibold text-white mb-2">操作方法</h3>
+                    <ul className="text-sm text-gray-300 space-y-1">
                       <li>• 左のパレットからコンポーネントをドラッグ</li>
                       <li>• ノードをクリックして選択</li>
                       <li>• 右のパネルでプロパティを編集</li>
