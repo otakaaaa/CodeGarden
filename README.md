@@ -88,19 +88,6 @@ src/
 └── ...
 ```
 
-## 主な機能
-
-### MVP機能
-- UIパーツ（Button, Text, Input）のドラッグ&ドロップ配置
-- ノードにイベント（onClick等）を設定
-- プレビューモードでの動作確認
-- プロジェクトの保存・読み込み
-
-### 課金機能
-- **Free**: 1プロジェクト、ローカル保存のみ
-- **Pro** (¥980/月): 複数プロジェクト、クラウド保存、高度ロジック
-- **Team** (¥3,800/月): 共同編集、メンバー管理
-
 ## 開発コマンド
 
 ```bash
@@ -123,19 +110,6 @@ make down    # 停止
 make logs    # ログ確認
 make shell   # コンテナにアクセス
 make clean   # クリーンアップ
-```
-
-## データベーススキーマ
-
-### projects テーブル
-```sql
-- id: uuid (PK)
-- user_id: uuid (FK: auth.users.id)
-- name: text
-- data: jsonb (nodes, edges, settings)
-- created_at: timestamp
-- updated_at: timestamp
-- is_deleted: boolean
 ```
 
 ## ライセンス
