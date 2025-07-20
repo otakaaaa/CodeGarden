@@ -73,8 +73,7 @@ export default function ProjectsPage() {
                          templates.find(t => t.id === templateId)?.name || "新しいプロジェクト";
       
       const result = await dispatch(createProject({ 
-        name: projectName,
-        template: templateId 
+        name: projectName
       }));
       
       if (createProject.fulfilled.match(result)) {

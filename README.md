@@ -27,27 +27,27 @@ npm install
 `.env.docker or .env.local`ファイルを作成（以下参考）
 ```bash
 # App Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3300
 NODE_ENV=development
 
 # Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=3で作成した情報を入力
-NEXT_PUBLIC_SUPABASE_ANON_KEY=3で作成した情報を入力
+NEXT_PUBLIC_SUPABASE_URL=担当者に確認
+NEXT_PUBLIC_SUPABASE_ANON_KEY=担当者に確認
 
 # Stripe Configuration
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=担当者に確認
+STRIPE_SECRET_KEY=担当者に確認
+STRIPE_WEBHOOK_SECRET=担当者に確認
 
 ```
 
-### 3. Supabaseセットアップ
+### 3. Supabaseセットアップ(スキップ)
 
 1. [Supabase](https://supabase.com)でプロジェクト作成
 2. `supabase/migrations/001_create_projects_table.sql`を実行
 3. 環境変数に接続情報を設定
 
-### 4. Stripeセットアップ
+### 4. Stripeセットアップ(スキップ)
 
 1. [Stripe](https://stripe.com)でアカウント作成
 2. ダッシュボードで商品・価格を作成

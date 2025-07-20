@@ -13,7 +13,7 @@ export const STRIPE_PLANS: PlanConfig[] = [
   {
     id: "pro",
     name: "Pro",
-    priceId: "price_1234567890", // 実際のPrice IDに置き換え
+    priceId: "price_1RmftwQS9Pb71yy7MD66BaFg", // 実際のPrice IDに置き換え
     price: "¥980",
     interval: "月",
     features: [
@@ -23,14 +23,13 @@ export const STRIPE_PLANS: PlanConfig[] = [
       "条件分岐・ループ",
       "変数システム",
       "PDF/コードエクスポート",
-      "プレミアムサポート",
     ],
     popular: true,
   },
   {
     id: "team",
     name: "Team",
-    priceId: "price_0987654321", // 実際のPrice IDに置き換え
+    priceId: "price_1RmfuUQS9Pb71yy7KpJImXUD", // 実際のPrice IDに置き換え
     price: "¥3,800",
     interval: "月",
     features: [
@@ -38,9 +37,7 @@ export const STRIPE_PLANS: PlanConfig[] = [
       "リアルタイム共同編集",
       "メンバー管理",
       "チーム分析",
-      "優先サポート",
       "カスタム統合",
-      "専用サポート担当",
     ],
   },
 ];
@@ -55,8 +52,8 @@ export function getPlanById(id: string): PlanConfig | undefined {
 
 // テスト環境用の価格ID（Stripeのテストモード用）
 export const TEST_PRICE_IDS = {
-  pro: "price_test_1234567890",
-  team: "price_test_0987654321",
+  pro: "price_1RmftwQS9Pb71yy7MD66BaFg",
+  team: "price_1RmfuUQS9Pb71yy7KpJImXUD",
 };
 
 // 本番環境用の価格ID
