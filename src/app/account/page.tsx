@@ -6,7 +6,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { updatePassword, signOut } from "@/lib/supabase/auth";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
-import { Text, Input } from "@/components/ui";
+import { Text } from "@/components/ui";
 import { 
   createCustomer, 
   getCustomerSubscriptions, 
@@ -15,6 +15,7 @@ import {
   createCustomerPortalSession 
 } from "@/lib/stripe/client";
 import { getPlanByPriceId } from "@/lib/stripe/config";
+import { supabase } from "@/lib/supabase";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -60,21 +61,46 @@ interface Subscription {
   created: number;
 }
 
+
   const initializeStripeData = useCallback(async () => {
     if (!user) return;
     
     try {
-      // Create or get customer
-      const customerResponse = await createCustomer(
-        user.email!,
-        user.user_metadata?.display_name || user.email!,
-        user.id
-      );
-      setCustomerId(customerResponse.customerId);
-      
-      // Get subscriptions
-      const subscriptionsResponse = await getCustomerSubscriptions(customerResponse.customerId);
-      setSubscriptions(subscriptionsResponse.subscriptions || []);
+      // First, check if user has subscription in local database
+      const { data: localSubscription, error: dbError } = await supabase
+        .from("user_subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (dbError && dbError.code !== "PGRST116") { // PGRST116 = not found
+        console.error("Error fetching local subscription:", dbError);
+      }
+
+      if (localSubscription && localSubscription.stripe_customer_id) {
+        setCustomerId(localSubscription.stripe_customer_id);
+        
+        // If subscription exists in DB and is active, use Stripe API for latest data
+        if (localSubscription.status === "active" || localSubscription.status === "trialing") {
+          const subscriptionsResponse = await getCustomerSubscriptions(localSubscription.stripe_customer_id);
+          setSubscriptions(subscriptionsResponse.subscriptions || []);
+        } else {
+          // Use local data for inactive subscriptions
+          setSubscriptions([]);
+        }
+      } else {
+        // Create or get customer if not in local DB
+        const customerResponse = await createCustomer(
+          user.email!,
+          user.user_metadata?.display_name || user.email!,
+          user.id
+        );
+        setCustomerId(customerResponse.customerId);
+        
+        // Get subscriptions from Stripe
+        const subscriptionsResponse = await getCustomerSubscriptions(customerResponse.customerId);
+        setSubscriptions(subscriptionsResponse.subscriptions || []);
+      }
     } catch (error) {
       console.error("Failed to initialize Stripe data:", error);
     }
@@ -93,6 +119,24 @@ interface Subscription {
       initializeStripeData();
     }
   }, [user, authLoading, router, initializeStripeData]);
+
+  // Function to get subscription info from local DB
+  // const getLocalSubscriptionInfo = async (): Promise<UserSubscription | null> => {
+  //   if (!user) return null;
+  //   
+  //   const { data, error } = await supabase
+  //     .from("user_subscriptions")
+  //     .select("*")
+  //     .eq("user_id", user.id)
+  //     .single();
+
+  //   if (error) {
+  //     console.error("Error fetching subscription:", error);
+  //     return null;
+  //   }
+
+  //   return data;
+  // };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();

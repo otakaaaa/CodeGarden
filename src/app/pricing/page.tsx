@@ -2,7 +2,6 @@
 
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
-import { Text } from "@/components/ui";
 import { useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { createCheckoutSession, createCustomer, getStripe } from "@/lib/stripe/client";
@@ -46,7 +45,6 @@ export default function PricingPage() {
         "条件分岐・ループ",
         "変数システム",
         "PDF/コードエクスポート",
-        "プレミアムサポート",
       ],
       popular: true,
     },
@@ -61,9 +59,7 @@ export default function PricingPage() {
         "リアルタイム共同編集",
         "メンバー管理",
         "チーム分析",
-        "優先サポート",
         "カスタム統合",
-        "専用サポート担当",
       ],
     },
   ];
@@ -292,12 +288,6 @@ export default function PricingPage() {
                     <td className="py-4 px-6 text-center text-red-400 font-bold">✗</td>
                     <td className="py-4 px-6 text-center text-red-400 font-bold bg-green-950">✗</td>
                     <td className="py-4 px-6 text-center text-green-400 font-bold">✓</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4 px-6 text-gray-300 font-medium">サポート</td>
-                    <td className="py-4 px-6 text-center text-gray-400 font-semibold">コミュニティ</td>
-                    <td className="py-4 px-6 text-center text-green-400 font-semibold bg-green-950">メール</td>
-                    <td className="py-4 px-6 text-center text-gray-400 font-semibold">専任担当</td>
                   </tr>
                 </tbody>
               </table>
