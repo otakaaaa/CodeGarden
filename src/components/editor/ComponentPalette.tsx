@@ -1,5 +1,7 @@
 "use client";
 
+import { MousePointer2, Type, TextCursorInput } from "lucide-react";
+
 interface ComponentPaletteProps {
   onAddComponent: (type: string) => void;
 }
@@ -9,19 +11,19 @@ export default function ComponentPalette({ onAddComponent }: ComponentPalettePro
     {
       type: "button",
       name: "ボタン",
-      icon: "🔘",
+      icon: MousePointer2,
       description: "クリック可能なボタン",
     },
     {
       type: "text",
       name: "テキスト", 
-      icon: "📝",
+      icon: Type,
       description: "テキスト表示",
     },
     {
       type: "input",
       name: "入力欄",
-      icon: "📝",
+      icon: TextCursorInput,
       description: "テキスト入力欄",
     },
   ];
@@ -38,7 +40,9 @@ export default function ComponentPalette({ onAddComponent }: ComponentPalettePro
             onClick={() => onAddComponent(component.type)}
           >
             <div className="flex items-center space-x-3">
-              <span className="text-2xl">{component.icon}</span>
+              <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
+                <component.icon className="w-5 h-5 text-gray-300" />
+              </div>
               <div>
                 <h3 className="font-medium text-white">{component.name}</h3>
                 <p className="text-sm text-gray-300">{component.description}</p>

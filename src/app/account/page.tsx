@@ -16,6 +16,9 @@ import {
 } from "@/lib/stripe/client";
 import { getPlanByPriceId } from "@/lib/stripe/config";
 import { supabase } from "@/lib/supabase";
+import { 
+  User, Lock, CreditCard, BarChart3, AlertTriangle, Check
+} from "lucide-react";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -264,11 +267,11 @@ interface Subscription {
   };
 
   const tabs = [
-    { id: "profile", label: "プロフィール", icon: "👤" },
-    { id: "security", label: "セキュリティ", icon: "🔒" },
-    { id: "subscription", label: "プラン", icon: "💳" },
-    { id: "usage", label: "使用状況", icon: "📊" },
-    { id: "danger", label: "危険な操作", icon: "⚠️" },
+    { id: "profile", label: "プロフィール", icon: User },
+    { id: "security", label: "セキュリティ", icon: Lock },
+    { id: "subscription", label: "プラン", icon: CreditCard },
+    { id: "usage", label: "使用状況", icon: BarChart3 },
+    { id: "danger", label: "危険な操作", icon: AlertTriangle },
   ];
 
   if (authLoading) {
@@ -510,7 +513,7 @@ interface Subscription {
                       <ul className="space-y-2">
                         {plan.features.map((feature, index) => (
                           <li key={index} className="flex items-center">
-                            <span className="text-green-400 mr-2">✓</span>
+                            <Check className="w-4 h-4 text-green-400 mr-2" />
                             <Text variant="caption" className="text-gray-300">{feature}</Text>
                           </li>
                         ))}
@@ -714,7 +717,7 @@ interface Subscription {
                           : "text-gray-300 hover:bg-gray-800"
                       }`}
                     >
-                      <span className="mr-3 text-lg">{tab.icon}</span>
+                      <tab.icon className="w-5 h-5 mr-3" />
                       <Text
                         className="text-white"
                         variant="body"
