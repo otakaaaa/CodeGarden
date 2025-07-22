@@ -1,6 +1,86 @@
 import { supabase } from "../supabase";
 import { Project, CreateProject, UpdateProject, projectSchema } from "../schemas";
 
+// 古いプロジェクトデータを新しい形式にマイグレーション
+function migrateProjectData(item: Record<string, unknown>): Record<string, unknown> {
+  // すでに新しい形式の場合はそのまま返す
+  if (item.data && typeof item.data === "object" && item.data !== null && 
+      "nodes" in item.data && Array.isArray((item.data as Record<string, unknown>).nodes)) {
+    // ノードデータの構造をチェックして修正
+    const migratedNodes = ((item.data as Record<string, unknown>).nodes as Record<string, unknown>[]).map((node: Record<string, unknown>) => {
+      if (!node.data || typeof node.data !== "object" || node.data === null) {
+        return node;
+      }
+
+      // 古い形式のノードデータを新しい形式に変換
+      const migratedNode = { ...node };
+      const nodeData = migratedNode.data as Record<string, unknown>;
+      
+      // data.labelが存在しない場合はデフォルト値を設定
+      if (!("label" in nodeData) || !nodeData.label) {
+        nodeData.label = `${node.type || "component"}-${node.id || "unknown"}`;
+      }
+
+      // プロパティがdataの直下にある場合はpropsに移動
+      if (!("props" in nodeData) || !nodeData.props) {
+        nodeData.props = {};
+        
+        // 既存のプロパティをpropsに移動
+        const propsToMove = ["text", "fontSize", "color", "fontWeight", "placeholder", "type", "required", "variant"];
+        propsToMove.forEach(prop => {
+          if (prop in nodeData && nodeData[prop] !== undefined) {
+            (nodeData.props as Record<string, unknown>)[prop] = nodeData[prop];
+            delete nodeData[prop];
+          }
+        });
+      }
+
+      // イベントデータの構造をチェック
+      if ("events" in nodeData && Array.isArray(nodeData.events)) {
+        nodeData.events = (nodeData.events as Record<string, unknown>[]).map((event: Record<string, unknown>) => {
+          if (event.action && typeof event.action === "object" && event.action !== null && 
+              !("value" in event.action)) {
+            (event.action as Record<string, unknown>).value = "";
+          }
+          return event;
+        });
+      }
+
+      return migratedNode;
+    });
+
+    const itemData = item.data as Record<string, unknown>;
+    const settings = (itemData.settings as Record<string, unknown>) || {};
+    
+    return {
+      ...item,
+      data: {
+        nodes: migratedNodes,
+        edges: itemData.edges || [],
+        settings: {
+          theme: settings.theme || "light",
+          previewMode: settings.previewMode || false,
+          variables: settings.variables || {},
+        },
+      },
+    };
+  }
+
+  // 完全に古い形式の場合は基本構造を作成
+  return {
+    ...item,
+    data: {
+      nodes: [],
+      edges: [],
+      settings: {
+        theme: "light",
+        previewMode: false,
+        variables: {},
+      },
+    },
+  };
+}
+
 // プロジェクト一覧取得
 export async function fetchProjects(): Promise<Project[]> {
   const { data: { user } } = await supabase.auth.getUser();
@@ -20,12 +100,17 @@ export async function fetchProjects(): Promise<Project[]> {
     throw new Error(`プロジェクト取得エラー: ${error.message}`);
   }
 
-  // Zodでバリデーション
-  const validatedData = data.map((item) => {
-    const result = projectSchema.safeParse(item);
+  // データマイグレーションとバリデーション
+  const validatedData = data.map((item, index) => {
+    // 古いデータ形式を新しい形式にマイグレーション
+    const migratedItem = migrateProjectData(item);
+    
+    const result = projectSchema.safeParse(migratedItem);
     if (!result.success) {
-      console.error("Project validation error:", result.error);
-      throw new Error("プロジェクトデータが不正です");
+      console.error(`Project validation error for item ${index}:`, result.error);
+      console.error("Validation issues:", JSON.stringify(result.error.issues, null, 2));
+      console.error("Migrated data:", JSON.stringify(migratedItem, null, 2));
+      throw new Error(`プロジェクトデータが不正です (項目 ${index})`);
     }
     return result.data;
   });
@@ -56,8 +141,10 @@ export async function fetchProject(projectId: string): Promise<Project | null> {
     throw new Error(`プロジェクト取得エラー: ${error.message}`);
   }
 
-  // Zodでバリデーション
-  const result = projectSchema.safeParse(data);
+  // データマイグレーションとバリデーション
+  const migratedData = migrateProjectData(data as Record<string, unknown>);
+  
+  const result = projectSchema.safeParse(migratedData);
   if (!result.success) {
     console.error("Project validation error:", result.error);
     throw new Error("プロジェクトデータが不正です");
@@ -100,8 +187,10 @@ export async function createProject(projectData: CreateProject): Promise<Project
     throw new Error(`プロジェクト作成エラー: ${error.message}`);
   }
 
-  // Zodでバリデーション
-  const result = projectSchema.safeParse(data);
+  // データマイグレーションとバリデーション
+  const migratedData = migrateProjectData(data as Record<string, unknown>);
+  
+  const result = projectSchema.safeParse(migratedData);
   if (!result.success) {
     console.error("Project validation error:", result.error);
     throw new Error("作成されたプロジェクトデータが不正です");
@@ -135,8 +224,10 @@ export async function updateProject(projectId: string, projectData: UpdateProjec
     throw new Error(`プロジェクト更新エラー: ${error.message}`);
   }
 
-  // Zodでバリデーション
-  const result = projectSchema.safeParse(data);
+  // データマイグレーションとバリデーション
+  const migratedData = migrateProjectData(data as Record<string, unknown>);
+  
+  const result = projectSchema.safeParse(migratedData);
   if (!result.success) {
     console.error("Project validation error:", result.error);
     throw new Error("更新されたプロジェクトデータが不正です");

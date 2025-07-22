@@ -16,6 +16,7 @@ import {
   Package, Plus, Layers, ChevronRight, Play,
   Archive
 } from "lucide-react";
+import { getTemplateData } from "@/lib/templates";
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -86,11 +87,23 @@ export default function ProjectsPage() {
   const handleCreateProject = async (templateId?: string) => {
     setCreateLoading(true);
     try {
-      const projectName = templateId === "blank" ? "新しいプロジェクト" : 
-                         templates.find(t => t.id === templateId)?.name || "新しいプロジェクト";
+      let projectName = "新しいプロジェクト";
+      let projectData = undefined;
+
+      if (templateId && templateId !== "blank") {
+        const template = templates.find(t => t.id === templateId);
+        if (template) {
+          projectName = template.name;
+          const templateDataResult = getTemplateData(templateId);
+          if (templateDataResult) {
+            projectData = templateDataResult;
+          }
+        }
+      }
       
       const result = await dispatch(createProject({ 
-        name: projectName
+        name: projectName,
+        data: projectData
       }));
       
       if (createProject.fulfilled.match(result)) {
