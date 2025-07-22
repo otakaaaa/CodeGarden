@@ -9,6 +9,12 @@ import { fetchProjects, createProject } from "@/lib/slices/projectsSlice";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
 import { Text, Input } from "@/components/ui";
+import { 
+  Search, X, Grid3X3, List, Copy, Trash2, 
+  ArrowRight, FileText, Hand, FileInput, Sparkles,
+  Package, Plus, Layers, ChevronRight, Play,
+  Archive
+} from "lucide-react";
 
 export default function ProjectsPage() {
   const router = useRouter();
@@ -29,28 +35,28 @@ export default function ProjectsPage() {
       id: "blank",
       name: "空のプロジェクト",
       description: "何もない状態から始める",
-      icon: "📄",
+      icon: FileText,
       components: 0,
     },
     {
       id: "hello-world",
       name: "Hello World",
       description: "最初のボタンとテキスト",
-      icon: "👋",
+      icon: Hand,
       components: 2,
     },
     {
       id: "form-example",
       name: "フォーム例",
       description: "入力フォームのサンプル",
-      icon: "📝",
+      icon: FileInput,
       components: 4,
     },
     {
       id: "interactive-demo",
       name: "インタラクティブデモ",
       description: "イベント機能のデモ",
-      icon: "✨",
+      icon: Sparkles,
       components: 6,
     },
   ];
@@ -179,11 +185,7 @@ export default function ProjectsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-gray-900 border-gray-700 text-white placeholder-gray-500 focus:border-green-500 focus:ring-green-500"
-                leftIcon={
-                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                }
+                leftIcon={<Search className="w-5 h-5 text-gray-500" />}
               />
             </div>
             
@@ -203,17 +205,13 @@ export default function ProjectsPage() {
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-2 ${viewMode === "grid" ? "bg-green-900 text-green-400" : "text-gray-400 hover:bg-gray-800"}`}
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
-                  </svg>
+                  <Grid3X3 className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
                   className={`px-3 py-2 ${viewMode === "list" ? "bg-green-900 text-green-400" : "text-gray-400 hover:bg-gray-800"}`}
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
-                  </svg>
+                  <List className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -231,9 +229,7 @@ export default function ProjectsPage() {
         {filteredProjects.length === 0 && projects.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
+              <Archive className="w-12 h-12 text-gray-500" />
             </div>
             <Text variant="title" className="mb-2 text-white">プロジェクトがありません</Text>
             <Text variant="body" className="mb-6 text-gray-400">
@@ -278,9 +274,7 @@ export default function ProjectsPage() {
                       
                       {viewMode === "grid" && (
                         <div className="flex items-center text-sm text-gray-400 mt-4">
-                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 6l-4-2v4l4-2z" clipRule="evenodd" />
-                          </svg>
+                          <Play className="w-4 h-4 mr-1" />
                           プレビュー
                         </div>
                       )}
@@ -300,9 +294,7 @@ export default function ProjectsPage() {
                       }}
                       title="複製"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
+                      <Copy className="w-4 h-4" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -313,9 +305,7 @@ export default function ProjectsPage() {
                       }}
                       title="削除"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -327,7 +317,7 @@ export default function ProjectsPage() {
         {/* Template Modal */}
         {showTemplateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-gray-900 rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-800">
                 <div className="flex items-center justify-between">
                   <Text variant="title" className="text-white">新しいプロジェクトを作成</Text>
@@ -336,41 +326,98 @@ export default function ProjectsPage() {
                     size="sm"
                     onClick={() => setShowTemplateModal(false)}
                   >
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <X className="w-5 h-5 text-gray-400" />
                   </Button>
                 </div>
                 <Text variant="body" className="mt-2 text-gray-400">
-                  テンプレートを選択してプロジェクトを始めましょう
+                  空のプロジェクトから始めるか、テンプレートを選択してください
                 </Text>
               </div>
 
               <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {templates.map((template) => (
-                    <button
-                      key={template.id}
-                      onClick={() => handleCreateProject(template.id)}
-                      disabled={createLoading}
-                      className="text-left p-4 bg-gray-800 border border-gray-700 rounded-lg hover:border-green-600 hover:bg-gray-800/70 transition-colors disabled:opacity-50"
-                    >
-                      <div className="flex items-start space-x-3">
-                        <span className="text-2xl">{template.icon}</span>
-                        <div className="flex-1">
-                          <Text variant="body" weight="medium" className="mb-1 text-white">
-                            {template.name}
-                          </Text>
-                          <Text variant="caption" className="mb-2 text-gray-400">
-                            {template.description}
-                          </Text>
-                          <Text variant="caption" className="text-gray-500">
-                            {template.components}個のコンポーネント
-                          </Text>
+                {/* 空のプロジェクトセクション */}
+                <div className="mb-8">
+                  <div className="flex items-center mb-4">
+                    <Plus className="w-6 h-6 text-green-400 mr-2" />
+                    <Text variant="heading" className="text-white">空のプロジェクト</Text>
+                  </div>
+                  <button
+                    onClick={() => handleCreateProject("blank")}
+                    disabled={createLoading}
+                    className="w-full text-left p-6 bg-gradient-to-r from-green-900 to-green-800 border-2 border-green-600 rounded-lg hover:from-green-800 hover:to-green-700 transition-all disabled:opacity-50 group"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-green-700 rounded-lg flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <Text variant="title" className="mb-1 text-white group-hover:text-green-100">
+                          空のプロジェクト
+                        </Text>
+                        <Text variant="body" className="text-green-200">
+                          何もない状態から自由に作成できます
+                        </Text>
+                        <div className="flex items-center mt-3 space-x-4">
+                          <div className="flex items-center text-green-300">
+                            <Layers className="w-4 h-4 mr-1" />
+                            完全にカスタマイズ可能
+                          </div>
                         </div>
                       </div>
-                    </button>
-                  ))}
+                      <div className="flex-shrink-0">
+                        <ArrowRight className="w-6 h-6 text-green-400 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* テンプレートセクション */}
+                <div>
+                  <div className="flex items-center mb-4">
+                    <Package className="w-6 h-6 text-gray-400 mr-2" />
+                    <Text variant="heading" className="text-white">テンプレート</Text>
+                  </div>
+                  <Text variant="body" className="text-gray-400 mb-6">
+                    学習に最適なサンプルプロジェクトから始めましょう
+                  </Text>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {templates.filter(t => t.id !== "blank").map((template) => (
+                      <button
+                        key={template.id}
+                        onClick={() => handleCreateProject(template.id)}
+                        disabled={createLoading}
+                        className="text-left p-5 bg-gray-800 border border-gray-700 rounded-lg hover:border-green-600 hover:bg-gray-750 transition-all disabled:opacity-50 group"
+                      >
+                        <div className="flex flex-col h-full">
+                          <div className="flex items-start space-x-3 mb-4">
+                            <div className="flex-shrink-0 w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
+                              {template.icon && <template.icon className="w-5 h-5 text-gray-300" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <Text variant="body" weight="medium" className="mb-1 text-white group-hover:text-green-400 transition-colors truncate">
+                                {template.name}
+                              </Text>
+                              <Text variant="caption" className="text-gray-400 line-clamp-2">
+                                {template.description}
+                              </Text>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-auto">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center text-gray-500">
+                                <Layers className="w-4 h-4 mr-1" />
+                                <Text variant="caption" className="text-gray-500">
+                                  {template.components}個
+                                </Text>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-green-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
