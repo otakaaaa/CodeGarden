@@ -44,6 +44,7 @@
 - ローカル開発環境のみDockerを使用
 - ダブルクォーテーション使用（シングルクォーテーション禁止）
 - 毎回developブランチに戻ってpullしてからタスク実行
+- アイコンはlucide-reactを使用
 
 ## 開発フロー
 1. `git checkout develop && git pull`

@@ -145,7 +145,7 @@ export async function updateProject(projectId: string, projectData: UpdateProjec
   return result.data;
 }
 
-// プロジェクト削除（論理削除）
+// プロジェクト削除（物理削除）
 export async function deleteProject(projectId: string): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   
@@ -153,14 +153,11 @@ export async function deleteProject(projectId: string): Promise<void> {
     throw new Error("認証が必要です");
   }
 
+  // RPC関数を使用して関連データも含めて削除
   const { error } = await supabase
-    .from("projects")
-    .update({ 
-      is_deleted: true,
-      updated_at: new Date().toISOString()
-    })
-    .eq("id", projectId)
-    .eq("user_id", user.id);
+    .rpc("delete_project_with_related_data", {
+      project_id_param: projectId
+    });
 
   if (error) {
     throw new Error(`プロジェクト削除エラー: ${error.message}`);

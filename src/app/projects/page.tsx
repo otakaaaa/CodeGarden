@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { fetchProjects, createProject } from "@/lib/slices/projectsSlice";
+import { fetchProjects, createProject, deleteProject } from "@/lib/slices/projectsSlice";
 import MainLayout from "@/components/layout/MainLayout";
 import Button from "@/components/ui/Button";
 import { Text, Input } from "@/components/ui";
+import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 import { 
   Search, X, Grid3X3, List, Copy, Trash2, 
   ArrowRight, FileText, Hand, FileInput, Sparkles,
@@ -28,6 +29,16 @@ export default function ProjectsPage() {
   const [sortBy, setSortBy] = useState<"name" | "updated" | "created">("updated");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [deleteModalState, setDeleteModalState] = useState<{
+    isOpen: boolean;
+    projectId: string | null;
+    projectName: string;
+  }>({
+    isOpen: false,
+    projectId: null,
+    projectName: "",
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Templates
   const templates = [
@@ -114,18 +125,30 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    if (!window.confirm("プロジェクトを削除しますか？この操作は取り消せません。")) {
-      return;
-    }
+  const handleDeleteProject = (projectId: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (!project) return;
 
+    setDeleteModalState({
+      isOpen: true,
+      projectId,
+      projectName: project.name,
+    });
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!deleteModalState.projectId) return;
+
+    setIsDeleting(true);
     try {
-      // TODO: Implement delete project in slice
-      // await dispatch(deleteProject(projectId));
-      console.log("削除予定のプロジェクトID:", projectId);
-      alert("プロジェクト削除機能は近日実装予定です");
+      const result = await dispatch(deleteProject(deleteModalState.projectId));
+      if (deleteProject.fulfilled.match(result)) {
+        setDeleteModalState({ isOpen: false, projectId: null, projectName: "" });
+      }
     } catch (err) {
       console.error("プロジェクト削除エラー:", err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -423,6 +446,17 @@ export default function ProjectsPage() {
             </div>
           </div>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <DeleteConfirmModal
+          isOpen={deleteModalState.isOpen}
+          onClose={() => setDeleteModalState({ isOpen: false, projectId: null, projectName: "" })}
+          onConfirm={confirmDeleteProject}
+          title="プロジェクトを削除"
+          message="このプロジェクトとすべての関連データが完全に削除されます。この操作は取り消せません。"
+          itemName={deleteModalState.projectName}
+          isDeleting={isDeleting}
+        />
       </div>
       </div>
     </MainLayout>
