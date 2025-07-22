@@ -1,4 +1,4 @@
-import { HTMLAttributes, forwardRef } from "react";
+import { HTMLAttributes } from "react";
 import { mergeClassNames as cn } from "@/lib/utils";
 
 interface TextProps extends HTMLAttributes<HTMLElement> {
@@ -10,18 +10,17 @@ interface TextProps extends HTMLAttributes<HTMLElement> {
   align?: "left" | "center" | "right" | "justify";
 }
 
-const Text = forwardRef<HTMLElement, TextProps>(
-  ({ 
-    className, 
-    as: Component = "p", 
-    variant = "body", 
-    size, 
-    weight = "normal", 
-    color = "default",
-    align = "left",
-    children, 
-    ...props 
-  }) => {
+const Text = ({ 
+  className, 
+  as: Component = "p", 
+  variant = "body", 
+  size, 
+  weight = "normal", 
+  color = "default",
+  align = "left",
+  children, 
+  ...props 
+}: TextProps) => {
     const baseClasses = "transition-colors";
     
     const variants = {
@@ -68,24 +67,21 @@ const Text = forwardRef<HTMLElement, TextProps>(
     // sizeが指定されている場合はvariantよりも優先
     const textSize = size ? sizes[size] : variants[variant];
 
-    return (
-      <Component
-        className={cn(
-          baseClasses,
-          textSize,
-          weights[weight],
-          colors[color],
-          alignments[align],
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </Component>
-    );
-  }
-);
-
-Text.displayName = "Text";
+  return (
+    <Component
+      className={cn(
+        baseClasses,
+        textSize,
+        weights[weight],
+        colors[color],
+        alignments[align],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </Component>
+  );
+};
 
 export default Text;
