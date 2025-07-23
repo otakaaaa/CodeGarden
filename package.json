@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:cf": "next build && cp -r .next/static out/_next/static && cp -r public/* out/",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
