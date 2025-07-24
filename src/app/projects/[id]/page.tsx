@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ReactFlow, {
   Node,
@@ -31,9 +31,8 @@ const nodeTypes: NodeTypes = {
   inputNode: InputNode,
 };
 
-function ProjectEditorContent() {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+export default function ProjectEditorPage() {
+  const { id } = useParams();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { user } = useAuth();
@@ -53,7 +52,7 @@ function ProjectEditorContent() {
     }
 
     if (id) {
-      dispatch(fetchProject(id));
+      dispatch(fetchProject(id as string));
     }
   }, [user, id, dispatch, router]);
 
@@ -362,15 +361,5 @@ function ProjectEditorContent() {
         )}
       </div>
     </div>
-  );
-}
-
-export default function ProjectEditorPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500"></div>
-    </div>}>
-      <ProjectEditorContent />
-    </Suspense>
   );
 }
