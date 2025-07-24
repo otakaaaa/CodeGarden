@@ -108,7 +108,7 @@ export default function ProjectsPage() {
       
       if (createProject.fulfilled.match(result)) {
         setShowTemplateModal(false);
-        router.push(`/editor?id=${result.payload.id}`);
+        router.push(`/projects/${result.payload.id}`);
       }
     } catch (err) {
       console.error("プロジェクト作成エラー:", err);
@@ -129,7 +129,7 @@ export default function ProjectsPage() {
       }));
       
       if (createProject.fulfilled.match(result)) {
-        router.push(`/editor?id=${result.payload.id}`);
+        router.push(`/projects/${result.payload.id}`);
       }
     } catch (err) {
       console.error("プロジェクト複製エラー:", err);
@@ -288,7 +288,7 @@ export default function ProjectsPage() {
               <div key={project.id} className={`group relative bg-gray-900 border border-gray-800 rounded-lg ${viewMode === "grid" ? "p-6" : "p-4"} hover:border-gray-700 hover:shadow-lg hover:shadow-green-900/20 transition-all`}>
                 {/* Project Link */}
                 <Link
-                  href={`/editor?id=${project.id}`}
+                  href={`/projects/${project.id}`}
                   className="block"
                 >
                   <div className={`flex ${viewMode === "list" ? "items-center justify-between" : "flex-col"}`}>
