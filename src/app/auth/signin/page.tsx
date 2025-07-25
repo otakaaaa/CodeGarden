@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "@/lib/supabase/auth";
+import { signIn, resendConfirmationEmail } from "@/lib/supabase/auth";
 import Button from "@/components/ui/Button";
 
 export default function SignInPage() {
@@ -12,6 +12,9 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +25,30 @@ export default function SignInPage() {
       await signIn(email, password);
       router.push("/projects");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "ログインに失敗しました");
+      const errorMessage = err instanceof Error ? err.message : "ログインに失敗しました";
+      setError(errorMessage);
+      
+      // メール未認証エラーをチェック
+      if (errorMessage.includes("Email not confirmed") || errorMessage.includes("メールアドレスが確認されていません")) {
+        setNeedsEmailConfirmation(true);
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    setError("");
+    setResendSuccess(false);
+    setResending(true);
+
+    try {
+      await resendConfirmationEmail(email);
+      setResendSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "メール再送信に失敗しました");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -53,6 +77,26 @@ export default function SignInPage() {
           {error && (
             <div className="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg">
               {error}
+              {needsEmailConfirmation && (
+                <div className="mt-3">
+                  <Button
+                    type="button"
+                    onClick={handleResendEmail}
+                    loading={resending}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    確認メールを再送信
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {resendSuccess && (
+            <div className="bg-green-900/20 border border-green-800 text-green-400 px-4 py-3 rounded-lg">
+              確認メールを再送信しました。メールをご確認ください。
             </div>
           )}
 
