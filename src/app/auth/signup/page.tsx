@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUp } from "@/lib/supabase/auth";
+import { signUp, resendConfirmationEmail } from "@/lib/supabase/auth";
 import Button from "@/components/ui/Button";
 
 export default function SignUpPage() {
@@ -14,6 +14,8 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +44,21 @@ export default function SignUpPage() {
     }
   };
 
+  const handleResendEmail = async () => {
+    setError("");
+    setResendSuccess(false);
+    setResending(true);
+
+    try {
+      await resendConfirmationEmail(email);
+      setResendSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "メール再送信に失敗しました");
+    } finally {
+      setResending(false);
+    }
+  };
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black py-12 px-4 sm:px-6 lg:px-8">
@@ -59,13 +76,34 @@ export default function SignUpPage() {
               {email} に確認メールを送信しました。
               メール内のリンクをクリックしてアカウントを有効化してください。
             </p>
+            {resendSuccess && (
+              <div className="mt-4 bg-green-900/20 border border-green-800 text-green-400 px-4 py-3 rounded-lg">
+                確認メールを再送信しました
+              </div>
+            )}
+            {error && (
+              <div className="mt-4 bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
           </div>
-          <Button
-            onClick={() => router.push("/auth/signin")}
-            variant="outline"
-          >
-            ログインページに戻る
-          </Button>
+          <div className="space-y-3">
+            <Button
+              onClick={handleResendEmail}
+              loading={resending}
+              variant="primary"
+              className="w-full"
+            >
+              確認メールを再送信
+            </Button>
+            <Button
+              onClick={() => router.push("/auth/signin")}
+              variant="outline"
+              className="w-full"
+            >
+              ログインページに戻る
+            </Button>
+          </div>
         </div>
       </div>
     );

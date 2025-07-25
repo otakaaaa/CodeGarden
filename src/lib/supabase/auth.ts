@@ -6,6 +6,9 @@ export async function signUp(email: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify`,
+    },
   });
 
   if (error) {
@@ -63,5 +66,20 @@ export async function updatePassword(newPassword: string) {
 
   if (error) {
     throw new Error(`パスワード更新エラー: ${error.message}`);
+  }
+}
+
+// メール認証の再送信
+export async function resendConfirmationEmail(email: string) {
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/verify`,
+    },
+  });
+
+  if (error) {
+    throw new Error(`メール再送信エラー: ${error.message}`);
   }
 }
