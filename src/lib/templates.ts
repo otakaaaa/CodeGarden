@@ -149,6 +149,161 @@ export const templateData: Record<string, ProjectData> = {
       },
     },
   },
+  "todo-app": {
+    nodes: [
+      {
+        id: "text-1",
+        type: "text",
+        position: { x: 100, y: 30 },
+        data: {
+          label: "タイトル",
+          props: {
+            text: "TODOリスト",
+            fontSize: 24,
+            color: "#000000",
+            fontWeight: "bold",
+          },
+        },
+      },
+      {
+        id: "input-1",
+        type: "input",
+        position: { x: 100, y: 100 },
+        data: {
+          label: "TODO入力",
+          props: {
+            placeholder: "やることを入力...",
+            type: "text",
+            required: false,
+          },
+          events: [
+            {
+              type: "onChange",
+              action: {
+                type: "setVariable",
+                target: "newTodo",
+                value: "input_value",
+              },
+            },
+          ],
+        },
+      },
+      {
+        id: "button-1",
+        type: "button",
+        position: { x: 400, y: 100 },
+        data: {
+          label: "追加ボタン",
+          props: {
+            text: "追加",
+            variant: "primary",
+          },
+          events: [
+            {
+              type: "onClick",
+              action: {
+                type: "showAlert",
+                value: "TODO追加機能を実装してください",
+              },
+            },
+          ],
+        },
+      },
+      {
+        id: "text-2",
+        type: "text",
+        position: { x: 100, y: 180 },
+        data: {
+          label: "TODOアイテム1",
+          props: {
+            text: "✓ サンプルTODO 1",
+            fontSize: 16,
+            color: "#333333",
+            fontWeight: "normal",
+          },
+        },
+      },
+      {
+        id: "button-2",
+        type: "button",
+        position: { x: 350, y: 180 },
+        data: {
+          label: "削除ボタン1",
+          props: {
+            text: "削除",
+            variant: "ghost",
+          },
+          events: [
+            {
+              type: "onClick",
+              action: {
+                type: "showAlert",
+                value: "削除機能を実装してください",
+              },
+            },
+          ],
+        },
+      },
+      {
+        id: "text-3",
+        type: "text",
+        position: { x: 100, y: 230 },
+        data: {
+          label: "TODOアイテム2",
+          props: {
+            text: "□ サンプルTODO 2",
+            fontSize: 16,
+            color: "#333333",
+            fontWeight: "normal",
+          },
+        },
+      },
+      {
+        id: "button-3",
+        type: "button",
+        position: { x: 350, y: 230 },
+        data: {
+          label: "削除ボタン2",
+          props: {
+            text: "削除",
+            variant: "ghost",
+          },
+          events: [
+            {
+              type: "onClick",
+              action: {
+                type: "showAlert",
+                value: "削除機能を実装してください",
+              },
+            },
+          ],
+        },
+      },
+      {
+        id: "text-4",
+        type: "text",
+        position: { x: 100, y: 300 },
+        data: {
+          label: "説明文",
+          props: {
+            text: "TODOリストの基本構造です。追加・削除・完了機能を実装してみましょう！",
+            fontSize: 14,
+            color: "#666666",
+            fontWeight: "normal",
+          },
+        },
+      },
+    ],
+    edges: [],
+    settings: {
+      theme: "light",
+      previewMode: false,
+      variables: {
+        newTodo: "",
+        todos: [],
+      },
+    },
+  },
   "interactive-demo": {
     nodes: [
       {

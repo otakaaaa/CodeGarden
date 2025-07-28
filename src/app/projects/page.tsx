@@ -12,9 +12,9 @@ import { Text, Input } from "@/components/ui";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 import { 
   Search, X, Grid3X3, List, Copy, Trash2, 
-  ArrowRight, FileText, Hand, FileInput, Sparkles,
+  ArrowRight, FileText, Hand,
   Package, Plus, Layers, ChevronRight, Play,
-  Archive
+  Archive, CheckSquare
 } from "lucide-react";
 import { getTemplateData } from "@/lib/templates";
 
@@ -58,18 +58,11 @@ export default function ProjectsPage() {
       components: 2,
     },
     {
-      id: "form-example",
-      name: "フォーム例",
-      description: "入力フォームのサンプル",
-      icon: FileInput,
-      components: 4,
-    },
-    {
-      id: "interactive-demo",
-      name: "インタラクティブデモ",
-      description: "イベント機能のデモ",
-      icon: Sparkles,
-      components: 6,
+      id: "todo-app",
+      name: "TODOアプリ",
+      description: "TODOリストの基本構造",
+      icon: CheckSquare,
+      components: 8,
     },
   ];
 
