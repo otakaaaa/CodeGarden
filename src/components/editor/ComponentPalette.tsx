@@ -1,6 +1,6 @@
 "use client";
 
-import { MousePointer2, Type, TextCursorInput } from "lucide-react";
+import { MousePointer2, Type, TextCursorInput, List } from "lucide-react";
 
 interface ComponentPaletteProps {
   onAddComponent: (type: string) => void;
@@ -25,6 +25,12 @@ export default function ComponentPalette({ onAddComponent }: ComponentPalettePro
       name: "入力欄",
       icon: TextCursorInput,
       description: "テキスト入力欄",
+    },
+    {
+      type: "list",
+      name: "リスト",
+      icon: List,
+      description: "動的なリスト表示",
     },
   ];
 
