@@ -145,7 +145,7 @@ export default function EventConfigModal({
                             type: e.target.value as "onClick" | "onChange" | "onSubmit",
                           })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
                       >
                         {getAvailableEventTypes().map((type) => (
                           <option key={type} value={type}>
@@ -168,14 +168,17 @@ export default function EventConfigModal({
                         value={event.action.type}
                         onChange={(e) =>
                           updateEventAction(eventIndex, {
-                            type: e.target.value as "setText" | "setVariable" | "showAlert",
+                            type: e.target.value as "setText" | "setVariable" | "showAlert" | "pushToArray" | "removeFromArray" | "clearArray",
                           })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
                       >
                         <option value="showAlert">アラート表示</option>
                         <option value="setText">テキスト設定</option>
                         <option value="setVariable">変数設定</option>
+                        <option value="pushToArray">配列に追加</option>
+                        <option value="removeFromArray">配列から削除</option>
+                        <option value="clearArray">配列をクリア</option>
                       </select>
                     </div>
 
@@ -214,13 +217,34 @@ export default function EventConfigModal({
                       </div>
                     )}
 
+                    {/* 配列操作用の追加フィールド */}
+                    {(event.action.type === "pushToArray" || event.action.type === "removeFromArray" || event.action.type === "clearArray") && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          配列変数名
+                        </label>
+                        <Input
+                          value={event.action.arrayKey || ""}
+                          onChange={(e) =>
+                            updateEventAction(eventIndex, { arrayKey: e.target.value })
+                          }
+                          placeholder="例: todos"
+                        />
+                      </div>
+                    )}
+
                     {/* 値 */}
+                    {event.action.type !== "clearArray" && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         {event.action.type === "showAlert"
                           ? "メッセージ"
                           : event.action.type === "setText"
                           ? "設定するテキスト"
+                          : event.action.type === "pushToArray"
+                          ? "追加する値"
+                          : event.action.type === "removeFromArray"
+                          ? "削除するアイテムのID"
                           : "設定する値"}
                       </label>
                       <Input
@@ -233,6 +257,10 @@ export default function EventConfigModal({
                             ? "表示するメッセージ"
                             : event.action.type === "setText"
                             ? "テキスト（${変数名}、#{ノードID}が使用可能）"
+                            : event.action.type === "pushToArray"
+                            ? "input_value で入力値を使用"
+                            : event.action.type === "removeFromArray"
+                            ? "削除するアイテムのID"
                             : "値"
                         }
                       />
@@ -240,6 +268,28 @@ export default function EventConfigModal({
                         ${"{変数名}"} でプロジェクト変数、#{"{ノードID}"} でノードの値を参照できます
                       </Text>
                     </div>
+                    )}
+
+                    {/* TODOアイテムとして追加（pushToArrayの場合） */}
+                    {event.action.type === "pushToArray" && (
+                      <div>
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            checked={!!event.action.itemKey}
+                            onChange={(e) =>
+                              updateEventAction(eventIndex, { 
+                                itemKey: e.target.checked ? "todo" : undefined 
+                              })
+                            }
+                            className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                          />
+                          <span className="text-sm text-gray-700">
+                            TODOアイテムとして追加（ID、テキスト、完了状態を含む）
+                          </span>
+                        </label>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

@@ -175,6 +175,7 @@ export const templateData: Record<string, ProjectData> = {
             placeholder: "やることを入力...",
             type: "text",
             required: false,
+            value: "${newTodo}",
           },
           events: [
             {
@@ -202,8 +203,18 @@ export const templateData: Record<string, ProjectData> = {
             {
               type: "onClick",
               action: {
-                type: "showAlert",
-                value: "TODO追加機能を実装してください",
+                type: "pushToArray",
+                arrayKey: "todos",
+                value: "${newTodo}",
+                itemKey: "todo",
+              },
+            },
+            {
+              type: "onClick",
+              action: {
+                type: "setVariable",
+                target: "newTodo",
+                value: "",
               },
             },
           ],
@@ -214,66 +225,58 @@ export const templateData: Record<string, ProjectData> = {
         type: "text",
         position: { x: 100, y: 180 },
         data: {
-          label: "TODOアイテム1",
+          label: "TODOリストの説明",
           props: {
-            text: "✓ サンプルTODO 1",
+            text: "TODOを追加して、管理しましょう！",
+            fontSize: 14,
+            color: "#666666",
+            fontWeight: "normal",
+          },
+        },
+      },
+      {
+        id: "text-3",
+        type: "text",
+        position: { x: 100, y: 220 },
+        data: {
+          label: "TODOカウント",
+          props: {
+            text: "現在のTODO: ${todos.length}件",
             fontSize: 16,
             color: "#333333",
-            fontWeight: "normal",
+            fontWeight: "medium",
+          },
+        },
+      },
+      {
+        id: "list-1",
+        type: "list",
+        position: { x: 100, y: 340 },
+        data: {
+          label: "TODOリスト",
+          props: {
+            arrayKey: "todos",
+            emptyMessage: "TODOがまだありません",
           },
         },
       },
       {
         id: "button-2",
         type: "button",
-        position: { x: 350, y: 180 },
+        position: { x: 100, y: 260 },
         data: {
-          label: "削除ボタン1",
+          label: "全クリアボタン",
           props: {
-            text: "削除",
-            variant: "ghost",
+            text: "すべてクリア",
+            variant: "danger",
           },
           events: [
             {
               type: "onClick",
               action: {
-                type: "showAlert",
-                value: "削除機能を実装してください",
-              },
-            },
-          ],
-        },
-      },
-      {
-        id: "text-3",
-        type: "text",
-        position: { x: 100, y: 230 },
-        data: {
-          label: "TODOアイテム2",
-          props: {
-            text: "□ サンプルTODO 2",
-            fontSize: 16,
-            color: "#333333",
-            fontWeight: "normal",
-          },
-        },
-      },
-      {
-        id: "button-3",
-        type: "button",
-        position: { x: 350, y: 230 },
-        data: {
-          label: "削除ボタン2",
-          props: {
-            text: "削除",
-            variant: "ghost",
-          },
-          events: [
-            {
-              type: "onClick",
-              action: {
-                type: "showAlert",
-                value: "削除機能を実装してください",
+                type: "clearArray",
+                arrayKey: "todos",
+                value: "",
               },
             },
           ],
@@ -282,7 +285,7 @@ export const templateData: Record<string, ProjectData> = {
       {
         id: "text-4",
         type: "text",
-        position: { x: 100, y: 300 },
+        position: { x: 100, y: 600 },
         data: {
           label: "説明文",
           props: {

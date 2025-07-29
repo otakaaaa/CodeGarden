@@ -78,12 +78,70 @@ export class EventEngine {
 
         case "setVariable":
           if (action.target) {
-            this.setVariable(action.target, action.value);
+            // 特殊な値の処理
+            let value: unknown = action.value;
+            if (action.value === "input_value" && sourceNodeId) {
+              value = this.getNodeValue(sourceNodeId);
+            } else {
+              value = this.evaluateExpression(action.value);
+            }
+            this.setVariable(action.target, value);
           }
           break;
 
         case "showAlert":
-          this.showAlert(action.value);
+          this.showAlert(this.evaluateExpression(action.value));
+          break;
+
+        case "pushToArray":
+          if (action.arrayKey) {
+            const array = this.getVariable(action.arrayKey) as unknown[];
+            if (!Array.isArray(array)) {
+              this.setVariable(action.arrayKey, []);
+            }
+            const currentArray = (this.getVariable(action.arrayKey) as unknown[]) || [];
+            
+            // 新しいアイテムの値を評価
+            let itemValue: unknown = action.value;
+            if (action.value === "input_value" && sourceNodeId) {
+              itemValue = this.getNodeValue(sourceNodeId);
+            } else {
+              itemValue = this.evaluateExpression(action.value);
+            }
+            
+            // TODOアイテムの場合、オブジェクトとして追加
+            if (action.itemKey) {
+              const newItem = {
+                id: Date.now().toString(),
+                text: itemValue,
+                completed: false
+              };
+              this.setVariable(action.arrayKey, [...currentArray, newItem]);
+            } else {
+              this.setVariable(action.arrayKey, [...currentArray, itemValue]);
+            }
+          }
+          break;
+
+        case "removeFromArray":
+          if (action.arrayKey && action.value) {
+            const array = this.getVariable(action.arrayKey) as unknown[];
+            if (Array.isArray(array)) {
+              const filteredArray = array.filter((item: unknown) => {
+                if (typeof item === "object" && item !== null && "id" in item) {
+                  return (item as { id: string }).id !== action.value;
+                }
+                return item !== action.value;
+              });
+              this.setVariable(action.arrayKey, filteredArray);
+            }
+          }
+          break;
+
+        case "clearArray":
+          if (action.arrayKey) {
+            this.setVariable(action.arrayKey, []);
+          }
           break;
 
         default:
@@ -139,9 +197,18 @@ export class EventEngine {
   evaluateExpression(expression: string): string {
     let result = expression;
     
-    // ${variableName} 形式の変数を置換
-    result = result.replace(/\$\{([^}]+)\}/g, (match, varName) => {
-      const value = this.getVariable(varName.trim());
+    // ${variableName} または ${variableName.property} 形式の変数を置換
+    result = result.replace(/\$\{([^}]+)\}/g, (match, varPath) => {
+      const parts = varPath.trim().split('.');
+      let value: unknown = this.getVariable(parts[0]);
+      
+      // ドット記法でプロパティにアクセス
+      for (let i = 1; i < parts.length && value !== undefined && value !== null; i++) {
+        if (typeof value === 'object') {
+          value = (value as Record<string, unknown>)[parts[i]];
+        }
+      }
+      
       return value !== undefined ? String(value) : match;
     });
 
