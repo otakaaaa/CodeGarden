@@ -13,6 +13,7 @@ interface InputNodeData {
     type?: "text" | "email" | "password" | "number" | "tel" | "url";
     placeholder?: string;
     color?: string;
+    value?: string;
   };
   events?: NodeEvent[];
 }
@@ -28,8 +29,16 @@ const InputNode = memo(({ data, selected, id }: InputNodeProps) => {
     size = "md", 
     type = "text",
     placeholder,
-    color
+    color,
+    value
   } = props;
+
+  // Get current value from event engine if available
+  const eventEngine = getEventEngine();
+  let currentValue = value || "";
+  if (eventEngine && value) {
+    currentValue = eventEngine.evaluateExpression(value);
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const eventEngine = getEventEngine();
@@ -55,6 +64,7 @@ const InputNode = memo(({ data, selected, id }: InputNodeProps) => {
           type={type}
           placeholder={placeholder || label}
           style={color ? { borderColor: color } : undefined}
+          value={currentValue}
           onChange={handleChange}
         />
         {events.length > 0 && (

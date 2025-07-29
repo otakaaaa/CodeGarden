@@ -2,9 +2,11 @@ import { z } from "zod";
 
 // イベントアクション
 export const eventActionSchema = z.object({
-  type: z.enum(["setText", "setVariable", "showAlert"]),
+  type: z.enum(["setText", "setVariable", "showAlert", "pushToArray", "removeFromArray", "clearArray"]),
   target: z.string().optional(),
   value: z.string(),
+  arrayKey: z.string().optional(),
+  itemKey: z.string().optional(),
 });
 
 // ノードイベント
@@ -23,7 +25,7 @@ export const nodeDataSchema = z.object({
 // React Flowノード
 export const flowNodeSchema = z.object({
   id: z.string(),
-  type: z.enum(["button", "text", "input"]),
+  type: z.enum(["button", "text", "input", "list"]),
   position: z.object({
     x: z.number(),
     y: z.number(),

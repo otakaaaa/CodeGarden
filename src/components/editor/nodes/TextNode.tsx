@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Handle, Position, NodeProps } from "reactflow";
 import Text from "@/components/ui/Text";
+import { getEventEngine } from "@/lib/eventEngine";
 
 interface TextNodeData {
   label: string;
@@ -11,6 +12,7 @@ interface TextNodeData {
     weight?: "normal" | "medium" | "semibold" | "bold";
     color?: string;
     align?: "left" | "center" | "right" | "justify";
+    text?: string;
   };
 }
 
@@ -25,8 +27,16 @@ const TextNode = memo(({ data, selected }: TextNodeProps) => {
     size, 
     weight = "normal", 
     color,
-    align = "left"
+    align = "left",
+    text
   } = props;
+
+  // Use dynamic text if available, otherwise fall back to label
+  const eventEngine = getEventEngine();
+  let displayText = text || label;
+  if (eventEngine && text) {
+    displayText = eventEngine.evaluateExpression(text);
+  }
 
   return (
     <div className={`relative ${selected ? "ring-2 ring-blue-500 ring-opacity-50" : ""}`}>
@@ -44,7 +54,7 @@ const TextNode = memo(({ data, selected }: TextNodeProps) => {
           align={align}
           style={color ? { color } : undefined}
         >
-          {label}
+          {displayText}
         </Text>
       </div>
 

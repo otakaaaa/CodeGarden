@@ -159,6 +159,15 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
         );
 
       case "text":
+        const textProps = node.data.props || {};
+        const textEngine = getEventEngine();
+        let displayText = textProps.text || label;
+        
+        // Check if the node has a text property that needs evaluation
+        if (textEngine && textProps.text) {
+          displayText = textEngine.evaluateExpression(textProps.text);
+        }
+        
         return (
           <div key={node.id} style={commonStyle}>
             <Text
@@ -167,23 +176,91 @@ export default function PreviewPanel({ nodes }: PreviewPanelProps) {
               style={color !== "#3B82F6" ? { color } : undefined}
               className={isResetting ? "animate-pulse" : ""}
             >
-              {label}
+              {displayText}
             </Text>
           </div>
         );
 
       case "input":
+        const inputProps = node.data.props || {};
+        const eventEngine = getEventEngine();
+        let inputValue = currentValue;
+        
+        // Check if the node has a value property that needs evaluation
+        if (eventEngine && inputProps.value) {
+          inputValue = eventEngine.evaluateExpression(inputProps.value);
+        }
+        
         return (
           <div key={node.id} style={commonStyle}>
             <Input
               variant="default"
               size={size}
-              placeholder={label}
-              value={currentValue}
+              placeholder={inputProps.placeholder || label}
+              value={inputValue}
               onChange={(e) => handleInputChange(node.id, e.target.value)}
               style={color !== "#3B82F6" ? { borderColor: color } : undefined}
               className={isResetting ? "animate-pulse" : ""}
             />
+          </div>
+        );
+
+      case "list":
+        const listProps = node.data.props || {};
+        const listEngine = getEventEngine();
+        let items: Array<{ id: string; text: string; completed?: boolean }> = [];
+        
+        if (listEngine && listProps.arrayKey) {
+          const arrayValue = listEngine.getVariable(listProps.arrayKey);
+          if (Array.isArray(arrayValue)) {
+            items = arrayValue.map((item: unknown, index: number) => {
+              if (
+                typeof item === "object" && 
+                item !== null && 
+                "id" in item && 
+                "text" in item &&
+                typeof (item as Record<string, unknown>).id === "string" &&
+                typeof (item as Record<string, unknown>).text === "string"
+              ) {
+                return {
+                  id: (item as Record<string, unknown>).id as string,
+                  text: (item as Record<string, unknown>).text as string,
+                  completed: "completed" in item && typeof (item as Record<string, unknown>).completed === "boolean" 
+                    ? (item as Record<string, unknown>).completed as boolean 
+                    : undefined
+                };
+              }
+              return {
+                id: index.toString(),
+                text: String(item),
+                completed: false
+              };
+            });
+          }
+        }
+        
+        return (
+          <div key={node.id} style={commonStyle}>
+            <div className="bg-white p-4 rounded border shadow-sm min-w-[200px] max-w-[400px]">
+              <div className="text-xs text-gray-500 mb-2">{label}</div>
+              {items.length === 0 ? (
+                <div className="text-gray-900 text-sm p-4 text-center">
+                  {listProps.emptyMessage || "アイテムがありません"}
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {items.map((item) => (
+                    <li key={item.id} className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                      <div className="flex items-center">
+                        <span className={`flex-1 text-gray-900 ${item.completed ? "line-through" : ""}`}>
+                          {item.text}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         );
 

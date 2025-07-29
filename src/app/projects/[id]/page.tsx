@@ -21,7 +21,7 @@ import Button from "@/components/ui/Button";
 import ComponentPalette from "@/components/editor/ComponentPalette";
 import PropertyPanel from "@/components/editor/PropertyPanel";
 import PreviewPanel from "@/components/editor/PreviewPanel";
-import { ButtonNode, TextNode, InputNode } from "@/components/editor/nodes";
+import { ButtonNode, TextNode, InputNode, ListNode } from "@/components/editor/nodes";
 import { initializeEventEngine, resetEventEngine } from "@/lib/eventEngine";
 
 // カスタムノードタイプの定義
@@ -29,6 +29,7 @@ const nodeTypes: NodeTypes = {
   buttonNode: ButtonNode,
   textNode: TextNode,
   inputNode: InputNode,
+  listNode: ListNode,
 };
 
 export default function ProjectEditorPage() {
@@ -63,6 +64,7 @@ export default function ProjectEditorPage() {
         button: "buttonNode",
         text: "textNode",
         input: "inputNode",
+        list: "listNode",
       };
 
       const reactFlowNodes = project.data.nodes.map(node => ({
@@ -141,7 +143,7 @@ export default function ProjectEditorPage() {
       // Convert ReactFlow nodes to our schema format
       const schemaNodes = nodes.map(node => ({
         id: node.id,
-        type: (node.data.componentType || "button") as "button" | "text" | "input",
+        type: (node.data.componentType || "button") as "button" | "text" | "input" | "list",
         position: node.position,
         data: {
           label: node.data.label || "",
@@ -180,12 +182,14 @@ export default function ProjectEditorPage() {
       button: "buttonNode",
       text: "textNode", 
       input: "inputNode",
+      list: "listNode",
     };
 
     const labelMap = {
       button: "ボタン",
       text: "テキスト",
       input: "入力欄",
+      list: "リスト",
     };
 
     const newNode: Node = {

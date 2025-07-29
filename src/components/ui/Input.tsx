@@ -33,7 +33,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const hasError = isInvalid || !!error;
     const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
 
-    const baseClasses = "w-full transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
+    const baseClasses = "w-full text-gray-900 transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
     
     const variants = {
       default: "border rounded-lg bg-white focus:ring-2 focus:ring-offset-1",
